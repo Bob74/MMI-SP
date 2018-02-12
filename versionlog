@@ -1,2 +1,5 @@
-~h~Download now! 1.1.3a~h~
-Hot fix: Stop removing all blips from the vehicle you enter
+~h~Download now! 1.1.4~h~
+Driver now stops and leaves the car when he is close to the player
+The mod checks if all prerequisites are installed
+Clearer error messages when missing prerequisites and less crash
+Now using SHVDN-Extender
