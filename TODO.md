@@ -1,5 +1,4 @@
 ```C#
-
 /*
 	
 	Notification avec icône Contact_Blocked
@@ -52,7 +51,7 @@ if (!CheckVisualCVersion())
 	UI.Notify("Your Microsoft Visual C++ is outdated! Download and install version 2015 or later.");
 }
 
-if (GetNETFrameworkVersions().CompareTo(doNetVersion) < 0)
+if (GetNETFrameworkVersion().CompareTo(doNetVersion) < 0)
 {
 	UI.Notify("Your Microsoft .NET Framework is outdated! Download and install version 4.7 or later.");
 }
@@ -82,7 +81,7 @@ public static bool CheckVisualCVersion()
 }
 
 
-public static Version GetNETFrameworkVersions()
+public static Version GetNETFrameworkVersion()
 {
 	using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey("SOFTWARE\\Microsoft\\NET Framework Setup\\NDP\\v4\\Full\\"))
 	{
@@ -110,4 +109,3 @@ public static Version GetNETFrameworkVersions()
 	}
 }
 ```
-
