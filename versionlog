@@ -1,5 +1,3 @@
-~h~Download now! 1.1.4~h~
-Driver now stops and leaves the car when he is close to the player
-The mod checks if all prerequisites are installed
-Clearer error messages when missing prerequisites and less crash
-Now using SHVDN-Extender
+~h~Download now! 1.1.4a~h~
+Ability to disable updates check and notifications when a prerequisite is missing
+Better Visual C++ version detection
