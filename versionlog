@@ -1,2 +1,4 @@
 ~h~Download now! 1.2.0a~h~
-Hotfix: Fixed a crash when insuring a vehicle or canceling a contract.
+Fixed a crash when insuring a vehicle or canceling a contract
+Fixed a bug where recovered vehicle blip wouldn't disappear
+Fixed missing translations
