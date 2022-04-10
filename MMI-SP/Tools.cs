@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.IO;
 using System.Diagnostics;
 using System.Text;
@@ -14,6 +15,16 @@ namespace MMI_SP
 
     public static class Tools
     {
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static string GetCurrentMethod(int offset = 0)
+        {
+            var methodInfo = new StackTrace().GetFrame(1 + offset).GetMethod();
+            var clasName = methodInfo.ReflectedType.Name;
+            
+            return $"{ clasName }.{ methodInfo.Name }";
+        }
+        
         public static string ToHexString(string str)
         {
             var sb = new StringBuilder();

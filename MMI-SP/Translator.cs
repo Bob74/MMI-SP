@@ -31,7 +31,7 @@ namespace MMI_SP
             _languageFilePath = fileName;
             if (!File.Exists(_languageFilePath))
             {
-                Logger.Log("Error: Language file does not exist! " + _languageFilePath + " (Check the language value in the config file and check if the file exist)");
+                Logger.Info("Error: Language file does not exist! " + _languageFilePath + " (Check the language value in the config file and check if the file exist)");
                 SE.UI.DrawNotification("MMI-SP: ERROR - Language file does not exist! See \"GTA V\\MMI-SP.log\"");
             }
             else
@@ -60,7 +60,7 @@ namespace MMI_SP
                             _strings.Add(new LocalizedString(str.Name.LocalName, str.Value));
             }
             else
-                Logger.Log("Error: Translator.GetAllStrings - Incomplete language file (cannot find \"Strings\").");
+                Logger.Info("Error: Translator.GetAllStrings - Incomplete language file (cannot find \"Strings\").");
         }
 
         private static string ReplaceVariablesInString(string str)

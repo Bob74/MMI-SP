@@ -74,7 +74,7 @@ namespace MMI_SP.iFruit
             }
             catch (Exception e)
             {
-                Logger.Log("Error: MMISound.Play - " + family.ToString() + " n°" + index.ToString() + ". " + e.Message);
+                Logger.Info("Error: MMISound.Play - " + family.ToString() + " n°" + index.ToString() + ". " + e.Message);
             }
 
         }

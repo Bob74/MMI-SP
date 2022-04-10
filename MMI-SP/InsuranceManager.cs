@@ -168,7 +168,7 @@ namespace MMI_SP
             }
             catch (Exception e)
             {
-                Logger.Log("Error: InsuranceManager - Cannot load database file. " + e.Message);
+                Logger.Info("Error: InsuranceManager - Cannot load database file. " + e.Message);
             }
         }
 
@@ -233,9 +233,9 @@ namespace MMI_SP
                 if (_dbFile.Element("Vehicles").Element(vehIdentifier) != null)
                     _dbFile.Element("Vehicles").Element(vehIdentifier).Remove();
                 else
-                    Logger.Log("Error: RemoveVehicleFromDB - Cannot find the section " + vehIdentifier);
+                    Logger.Info("Error: RemoveVehicleFromDB - Cannot find the section " + vehIdentifier);
             else
-                Logger.Log("Error: RemoveVehicleFromDB - Cannot find the section Vehicles");
+                Logger.Info("Error: RemoveVehicleFromDB - Cannot find the section Vehicles");
 
             SaveDBFile();
 
@@ -283,19 +283,19 @@ namespace MMI_SP
                                     return newVehID;
                                 }
                                 else
-                                    Logger.Log("Error: ChangeVehicleLicensePlate - Unable to find the modelHash for the vehicle " + vehIdentifier + ".");
+                                    Logger.Info("Error: ChangeVehicleLicensePlate - Unable to find the modelHash for the vehicle " + vehIdentifier + ".");
                             }
                             else
-                                Logger.Log("Error: ChangeVehicleLicensePlate - General section is missing for the vehicle " + vehIdentifier + ".");
+                                Logger.Info("Error: ChangeVehicleLicensePlate - General section is missing for the vehicle " + vehIdentifier + ".");
                         }
                         else
-                            Logger.Log("Error: ChangeVehicleLicensePlate - NumberPlate section is missing for the vehicle " + vehIdentifier + ".");
+                            Logger.Info("Error: ChangeVehicleLicensePlate - NumberPlate section is missing for the vehicle " + vehIdentifier + ".");
                     }
                     else
-                        Logger.Log("Error: ChangeVehicleLicensePlate - Plate section is missing for the vehicle " + vehIdentifier + ".");
+                        Logger.Info("Error: ChangeVehicleLicensePlate - Plate section is missing for the vehicle " + vehIdentifier + ".");
                 }
                 else
-                    Logger.Log("Error: ChangeVehicleLicensePlate - The vehicle identifier cannot be found: " + vehIdentifier);
+                    Logger.Info("Error: ChangeVehicleLicensePlate - The vehicle identifier cannot be found: " + vehIdentifier);
             }
 
             return "";
@@ -321,7 +321,7 @@ namespace MMI_SP
                     }
                 }
                 else
-                    Logger.Log("Error: GetVehicleLicensePlate - The vehicle identifier cannot be found: " + vehIdentifier);
+                    Logger.Info("Error: GetVehicleLicensePlate - The vehicle identifier cannot be found: " + vehIdentifier);
             }
 
             return "";
@@ -362,11 +362,11 @@ namespace MMI_SP
                     }
                     catch (Exception e)
                     {
-                        Logger.Log("Error: GetVehicleFriendlyName - Cannot convert model hash to int: " + e.Message);
+                        Logger.Info("Error: GetVehicleFriendlyName - Cannot convert model hash to int: " + e.Message);
                     }
                 }
                 else
-                    Logger.Log("Error: GetVehicleFriendlyName - The vehicle identifier cannot be found: " + vehIdentifier);
+                    Logger.Info("Error: GetVehicleFriendlyName - The vehicle identifier cannot be found: " + vehIdentifier);
             }
 
             return "Unknown";
@@ -394,11 +394,11 @@ namespace MMI_SP
                     }
                     catch (Exception e)
                     {
-                        Logger.Log("Error: GetVehicleFriendlyName - Cannot convert model hash to int: " + e.Message);
+                        Logger.Info("Error: GetVehicleFriendlyName - Cannot convert model hash to int: " + e.Message);
                     }
                 }
                 else
-                    Logger.Log("Error: GetVehicleFriendlyName - The vehicle identifier cannot be found: " + vehIdentifier);
+                    Logger.Info("Error: GetVehicleFriendlyName - The vehicle identifier cannot be found: " + vehIdentifier);
             }
 
             return "Unknown";
@@ -424,14 +424,14 @@ namespace MMI_SP
                     }
                         
                     else
-                        Logger.Log("Error: GetVehicleInsuranceCost - General section is missing for the vehicle " + vehIdentifier + ".");
+                        Logger.Info("Error: GetVehicleInsuranceCost - General section is missing for the vehicle " + vehIdentifier + ".");
                 }
                 else
-                    Logger.Log("Error: GetVehicleInsuranceCost - Vehicle " + vehIdentifier + " not found in database.");
+                    Logger.Info("Error: GetVehicleInsuranceCost - Vehicle " + vehIdentifier + " not found in database.");
 
             }
             else
-                Logger.Log("Error: GetVehicleInsuranceCost - No vehicles found in database file.");
+                Logger.Info("Error: GetVehicleInsuranceCost - No vehicles found in database file.");
 
             return 0;
         }
@@ -488,10 +488,10 @@ namespace MMI_SP
                 }
                 else
                 {
-                    Logger.Log("Error : RecoverVehicle - The vehicle doesn't exist.");
+                    Logger.Info("Error : RecoverVehicle - The vehicle doesn't exist.");
                 }
             else
-                Logger.Log("Error: RecoverVehicle - The vehicle value is null.");
+                Logger.Info("Error: RecoverVehicle - The vehicle value is null.");
         }
 
         /// <summary>
@@ -809,7 +809,7 @@ namespace MMI_SP
             catch (Exception e)
             {
                 tiresSection.Add(new XElement("TireSmokeColor", ColorTranslator.ToHtml(Color.White)));
-                Logger.Log("Warning: GenerateVehicleSection - TireSmokeColor is wrong: " + e.Message);
+                Logger.Info("Warning: GenerateVehicleSection - TireSmokeColor is wrong: " + e.Message);
             }
             tiresSection.Add(new XElement("CanTiresBurst", veh.CanTiresBurst));
             vehSection.Add(tiresSection);
@@ -823,7 +823,7 @@ namespace MMI_SP
             catch (Exception e)
             {
                 neonsSection.Add(new XElement("NeonLightsColor", ColorTranslator.ToHtml(Color.White)));
-                Logger.Log("Warning: GenerateVehicleSection - NeonLightsColor is wrong: " + e.Message);
+                Logger.Info("Warning: GenerateVehicleSection - NeonLightsColor is wrong: " + e.Message);
             }
 
             for (int i = 0; i < 4; i++)
@@ -903,7 +903,7 @@ namespace MMI_SP
                         if (currentSection.Element("NumberPlateType") != null)
                             currentSection.Element("NumberPlateType").SetValue((int)veh.NumberPlateType);
                         else
-                            Logger.Log("Error: UpdateVehicleToDB - NumberPlateType not found.");
+                            Logger.Info("Error: UpdateVehicleToDB - NumberPlateType not found.");
 
                     // Wheels
                     currentSection = vehSection.Element("Wheels");
@@ -911,7 +911,7 @@ namespace MMI_SP
                         if (currentSection.Element("WheelType") != null)
                             currentSection.Element("WheelType").SetValue(veh.WheelType);
                         else
-                            Logger.Log("Error: UpdateVehicleToDB - WheelType not found.");
+                            Logger.Info("Error: UpdateVehicleToDB - WheelType not found.");
 
                     // Mods
                     currentSection = vehSection.Element("Mods");
@@ -954,16 +954,16 @@ namespace MMI_SP
                             catch (Exception e)
                             {
                                 currentSection.Element("TireSmokeColor").SetValue(ColorTranslator.ToHtml(Color.White));
-                                Logger.Log("Warning: GenerateVehicleSection - TireSmokeColor is wrong: " + e.Message);
+                                Logger.Info("Warning: GenerateVehicleSection - TireSmokeColor is wrong: " + e.Message);
                             }
                         }
                         else
-                            Logger.Log("Error: UpdateVehicleToDB - TireSmokeColor not found.");
+                            Logger.Info("Error: UpdateVehicleToDB - TireSmokeColor not found.");
 
                         if (currentSection.Element("CanTiresBurst") != null)
                             currentSection.Element("CanTiresBurst").SetValue(veh.CanTiresBurst);
                         else
-                            Logger.Log("Error: UpdateVehicleToDB - CanTiresBurst not found.");
+                            Logger.Info("Error: UpdateVehicleToDB - CanTiresBurst not found.");
                     }
 
                     // Neons
@@ -978,7 +978,7 @@ namespace MMI_SP
                         catch (Exception e)
                         {
                             currentSection.Add(new XElement("NeonLightsColor", ColorTranslator.ToHtml(Color.White)));
-                            Logger.Log("Warning: GenerateVehicleSection - NeonLightsColor is wrong: " + e.Message);
+                            Logger.Info("Warning: GenerateVehicleSection - NeonLightsColor is wrong: " + e.Message);
                         }
                         
                         for (int i = 0; i < 4; i++)
@@ -991,37 +991,37 @@ namespace MMI_SP
                     if (currentSection != null)
                     {
                         if (currentSection.Element("IsPrimaryColorCustom") != null) currentSection.Element("IsPrimaryColorCustom").SetValue(veh.IsPrimaryColorCustom);
-                        else Logger.Log("Error: UpdateVehicleToDB - IsPrimaryColorCustom not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - IsPrimaryColorCustom not found.");
 
                         if (currentSection.Element("IsSecondaryColorCustom") != null) currentSection.Element("IsSecondaryColorCustom").SetValue(veh.IsSecondaryColorCustom);
-                        else Logger.Log("Error: UpdateVehicleToDB - IsSecondaryColorCustom not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - IsSecondaryColorCustom not found.");
 
                         if (currentSection.Element("PrimaryColor") != null) currentSection.Element("PrimaryColor").SetValue(veh.PrimaryColor);
-                        else Logger.Log("Error: UpdateVehicleToDB - PrimaryColor not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - PrimaryColor not found.");
 
                         if (currentSection.Element("SecondaryColor") != null) currentSection.Element("SecondaryColor").SetValue(veh.SecondaryColor);
-                        else Logger.Log("Error: UpdateVehicleToDB - SecondaryColor not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - SecondaryColor not found.");
 
                         if (currentSection.Element("PearlescentColor") != null) currentSection.Element("PearlescentColor").SetValue(veh.PearlescentColor);
-                        else Logger.Log("Error: UpdateVehicleToDB - PearlescentColor not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - PearlescentColor not found.");
 
                         if (currentSection.Element("RimColor") != null) currentSection.Element("RimColor").SetValue(veh.RimColor);
-                        else Logger.Log("Error: UpdateVehicleToDB - RimColor not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - RimColor not found.");
 
                         if (currentSection.Element("ColorCombination") != null) currentSection.Element("ColorCombination").SetValue(veh.ColorCombination);
-                        else Logger.Log("Error: UpdateVehicleToDB - ColorCombination not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - ColorCombination not found.");
 
                         if (currentSection.Element("CustomPrimaryColor") != null) currentSection.Element("CustomPrimaryColor").SetValue(ColorTranslator.ToHtml(veh.CustomPrimaryColor));
-                        else Logger.Log("Error: UpdateVehicleToDB - CustomPrimaryColor not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - CustomPrimaryColor not found.");
 
                         if (currentSection.Element("CustomSecondaryColor") != null) currentSection.Element("CustomSecondaryColor").SetValue(ColorTranslator.ToHtml(veh.CustomSecondaryColor));
-                        else Logger.Log("Error: UpdateVehicleToDB - CustomSecondaryColor not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - CustomSecondaryColor not found.");
 
                         if (currentSection.Element("DashboardColor") != null) currentSection.Element("DashboardColor").SetValue(veh.DashboardColor);
-                        else Logger.Log("Error: UpdateVehicleToDB - DashboardColor not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - DashboardColor not found.");
 
                         if (currentSection.Element("TrimColor") != null) currentSection.Element("TrimColor").SetValue(veh.TrimColor);
-                        else Logger.Log("Error: UpdateVehicleToDB - TrimColor not found.");
+                        else Logger.Info("Error: UpdateVehicleToDB - TrimColor not found.");
 
                     }
 
@@ -1034,7 +1034,7 @@ namespace MMI_SP
                             if (currentSection.Element("ConvertibleRoofState") != null)
                                 currentSection.Element("ConvertibleRoofState").SetValue(veh.RoofState);
                             else
-                                Logger.Log("Error: UpdateVehicleToDB - NeonLightsColor not found.");
+                                Logger.Info("Error: UpdateVehicleToDB - NeonLightsColor not found.");
                     }
 
                     // Extra
@@ -1053,7 +1053,7 @@ namespace MMI_SP
                         if (currentSection.Element("ID") != null)
                             currentSection.Element("ID").SetValue(veh.Livery);
                         else
-                            Logger.Log("Error: UpdateVehicleToDB - Livery ID not found.");
+                            Logger.Info("Error: UpdateVehicleToDB - Livery ID not found.");
 
                     if (SE.Vehicle.GetVehicleLivery2(veh) > 0)
                     {
@@ -1062,7 +1062,7 @@ namespace MMI_SP
                             if (currentSection.Element("ID") != null)
                                 currentSection.Element("ID").SetValue(SE.Vehicle.GetVehicleLivery2(veh));
                             else
-                                Logger.Log("Error: UpdateVehicleToDB - Livery2 ID not found.");
+                                Logger.Info("Error: UpdateVehicleToDB - Livery2 ID not found.");
                     }
 
                     // Saving file
@@ -1070,12 +1070,12 @@ namespace MMI_SP
                 }
                 else
                 {
-                    Logger.Log("Error: UpdateVehicleToDB - Unable to find the current vehicle section in DB: " + vehIdentifier);
+                    Logger.Info("Error: UpdateVehicleToDB - Unable to find the current vehicle section in DB: " + vehIdentifier);
                 }
             }
             else
             {
-                Logger.Log("Error: UpdateVehicleToDB - The \"vehicles\" section doesn't exist in the DB file!");
+                Logger.Info("Error: UpdateVehicleToDB - The \"vehicles\" section doesn't exist in the DB file!");
             }
         }
 
@@ -1161,7 +1161,7 @@ namespace MMI_SP
                             if (vehSection.Element("Neons").Element("NeonLightsColor") != null)
                                 veh.NeonLightsColor = ColorTranslator.FromHtml(vehSection.Element("Neons").Element("NeonLightsColor").Value);
                             else
-                                Logger.Log("Error: CreateVehicleFromDB - Cannot find element NeonLightsColor");
+                                Logger.Info("Error: CreateVehicleFromDB - Cannot find element NeonLightsColor");
 
                             foreach (XElement neon in vehSection.Element("Neons").Elements("VehicleNeonLight"))
                                 veh.SetNeonLightsOn((VehicleNeonLight)Int32.Parse(neon.Value), true);
@@ -1223,7 +1223,7 @@ namespace MMI_SP
             }
             catch (Exception e)
             {
-                Logger.Log("Error: CreateVehicleFromDB - " + e.Message);
+                Logger.Info("Error: CreateVehicleFromDB - " + e.Message);
             }
             return null;
         }

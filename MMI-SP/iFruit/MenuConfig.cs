@@ -41,13 +41,13 @@ namespace MMI_SP.iFruit
             AddMenuConfigCheckbox(submenuiFruit, "iFruit", "CaniFruitRecover", iFruitMMI.CaniFruitRecover, T.GetString("ConfigMenuiFruitRecover"));
             AddMenuConfigCheckbox(submenuiFruit, "iFruit", "CaniFruitStolen", iFruitMMI.CaniFruitStolen, T.GetString("ConfigMenuiFruitStolen"));
             AddMenuConfigCheckbox(submenuiFruit, "iFruit", "CaniFruitPlate", iFruitMMI.CaniFruitPlate, T.GetString("ConfigMenuiFruitPlate"));
-
+            
             UIMenu submenuNotifications = AddSubMenu(_menuPool, _mainMenu, _menuTitle, T.GetString("ConfigMenuItemNotify"), _offset);
-            AddMenuConfigCheckbox(submenuNotifications, "Check", "CheckForUpdate", MMI.CheckForUpdate, T.GetString("ConfigMenuNotifyUpdate"));
-            AddMenuConfigCheckbox(submenuNotifications, "Check", "ShowSHVDNNotification", MMI.ShowSHVDNNotification, T.GetString("ConfigMenuNotifySHVDN"));
-            AddMenuConfigCheckbox(submenuNotifications, "Check", "ShowFileNotification", MMI.ShowFileNotification, T.GetString("ConfigMenuNotifyFile"));
-            AddMenuConfigCheckbox(submenuNotifications, "Check", "ShowVisualCNotification", MMI.ShowSHVDNNotification, T.GetString("ConfigMenuNotifyVisualC"));
-            AddMenuConfigCheckbox(submenuNotifications, "Check", "ShowNETFrameworkNotification", MMI.ShowSHVDNNotification, T.GetString("ConfigMenuNotifyNET"));
+            AddMenuConfigCheckbox(submenuNotifications, "Check", "CheckForUpdate", Config.CheckForUpdate, T.GetString("ConfigMenuNotifyUpdate"));
+            AddMenuConfigCheckbox(submenuNotifications, "Check", "ShowSHVDNNotification", Config.ShowSHVDNNotification, T.GetString("ConfigMenuNotifySHVDN"));
+            AddMenuConfigCheckbox(submenuNotifications, "Check", "ShowFileNotification", Config.ShowFileNotification, T.GetString("ConfigMenuNotifyFile"));
+            AddMenuConfigCheckbox(submenuNotifications, "Check", "ShowVisualCNotification", Config.ShowSHVDNNotification, T.GetString("ConfigMenuNotifyVisualC"));
+            AddMenuConfigCheckbox(submenuNotifications, "Check", "ShowNETFrameworkNotification", Config.ShowSHVDNNotification, T.GetString("ConfigMenuNotifyNET"));
             submenuNotifications.AddItem(new UIMenuItem(T.GetString("ConfigMenuNotifyReboot")) { Enabled = false } );
 
             UIMenu submenuInsurance = AddSubMenu(_menuPool, _mainMenu, _menuTitle, T.GetString("ConfigMenuItemInsurance"), _offset);

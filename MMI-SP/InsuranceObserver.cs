@@ -92,7 +92,7 @@ namespace MMI_SP
 
         void Initialize(object sender, EventArgs e)
         {
-            while (!MMI.Initialized)
+            while (!MMI.IsInitialized)
                 Yield();
 
             _im = new InsuranceManager();
@@ -487,7 +487,7 @@ namespace MMI_SP
                 }
             }
             else
-                Logger.Log("Error: BringVehicleToPlayer - The vehicle doesn't exist!");
+                Logger.Info("Error: BringVehicleToPlayer - The vehicle doesn't exist!");
         }
 
         internal void CannotBringVehicle(IncomingVehicle incoming, int refund = 0)

@@ -99,8 +99,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SelfCheck.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Translator.cs" />
+    <Compile Include="Updater.cs" />
     <Compile Include="WavePlayer\WavePlayer.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -117,7 +117,7 @@ namespace MMI_SP.Agency
                             }
                             catch (Exception e)
                             {
-                                Logger.Log("Error: DisplayAgencyThisFrame - " + e.Message);
+                                Logger.Info("Error: DisplayAgencyThisFrame - " + e.Message);
                                 UI.Notify("MMI-SP: Error while creating the office.");
 
                                 ErrorCancelAgency();
@@ -171,7 +171,7 @@ namespace MMI_SP.Agency
             }
             catch (Exception e)
             {
-                Logger.Log("Error: EnterAgency - " + e.Message);
+                Logger.Info("Error: EnterAgency - " + e.Message);
                 UI.Notify("MMI-SP: Error with module NativeUI!");
 
                 ErrorCancelAgency();
@@ -213,7 +213,7 @@ namespace MMI_SP.Agency
             }
             catch (Exception e)
             {
-                Logger.Log("Error: EnterAgency - " + e.Message);
+                Logger.Info("Error: EnterAgency - " + e.Message);
                 UI.Notify("MMI-SP: Error with module NativeUI!");
 
                 ErrorCancelAgency();

@@ -136,7 +136,7 @@ namespace MMI_SP.Agency
                         }
                     }
                 }
-                Logger.Log("Error: OfficeItem Init - prop is null!");
+                Logger.Info("Error: OfficeItem Init - prop is null!");
                 return null;
             }
         }

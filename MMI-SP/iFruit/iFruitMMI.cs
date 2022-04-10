@@ -70,7 +70,7 @@ namespace MMI_SP.iFruit
             }
             catch (Exception ex)
             {
-                Logger.Log(ex);
+                Logger.Info(ex);
             }
 
             _iFruit.Update();
@@ -96,7 +96,7 @@ namespace MMI_SP.iFruit
             }
             catch (Exception e)
             {
-                Logger.Log("Error: ContactAnswered - " + e.Message + "\r\n" + e.StackTrace);
+                Logger.Info("Error: ContactAnswered - " + e.Message + "\r\n" + e.StackTrace);
                 UI.Notify("MMI-SP: Error with module NativeUI!");
             }
 
@@ -119,7 +119,7 @@ namespace MMI_SP.iFruit
             }
             catch (Exception e)
             {
-                Logger.Log("Error: ContactAnswered - " + e.Message);
+                Logger.Info("Error: ContactAnswered - " + e.Message);
                 UI.Notify("MMI-SP: Error with module NativeUI!");
             }
             _iFruit.Close();

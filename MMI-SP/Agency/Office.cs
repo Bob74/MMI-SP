@@ -62,10 +62,10 @@ namespace MMI_SP.Agency
                             if (npc.Exists()) npc.SetNoCollision(prop, true);
                     }
                     else
-                        Logger.Log("Error: BuildOffice Props - prop is null!");
+                        Logger.Info("Error: BuildOffice Props - prop is null!");
                 }
                 else
-                    Logger.Log("Error: BuildOffice Props - npc is null!");
+                    Logger.Info("Error: BuildOffice Props - npc is null!");
             }
                 
 
@@ -78,7 +78,7 @@ namespace MMI_SP.Agency
             else
             {
                 officeCamera.PointAt(npcPos);
-                Logger.Log("Error: BuildOffice Camera - npc is null!");
+                Logger.Info("Error: BuildOffice Camera - npc is null!");
             }
 
             World.RenderingCamera = officeCamera;
@@ -103,7 +103,7 @@ namespace MMI_SP.Agency
                 }
             }
             else
-                Logger.Log("Error: CleanUp - npc is null!");
+                Logger.Info("Error: CleanUp - npc is null!");
 
             itemsCollection.DeleteItems();
         }
@@ -158,7 +158,7 @@ namespace MMI_SP.Agency
                 }
             }
             else
-                Logger.Log("Error: CreateNpc - npc is null!");
+                Logger.Info("Error: CreateNpc - npc is null!");
 
             return npc;
         }
@@ -181,10 +181,10 @@ namespace MMI_SP.Agency
                     npc.Task.LookAt(officeCameraPos);
                 }
                 else
-                    Logger.Log("Error: SetNpcAI - npc doesn't exist!");
+                    Logger.Info("Error: SetNpcAI - npc doesn't exist!");
             }
             else
-                Logger.Log("Error: SetNpcAI - npc is null!");
+                Logger.Info("Error: SetNpcAI - npc is null!");
 
         }
         internal void NpcSay(SpeechType type)
