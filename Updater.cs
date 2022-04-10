@@ -14,10 +14,10 @@ namespace MMI_SP
     {
         private class MMIVersion
         {
-            private Version _version;
+            private readonly Version _version;
             public Version Version { get => _version; }
 
-            private string _changelog;
+            private readonly string _changelog;
             public string Changelog { get => _changelog; }
 
             public MMIVersion(string version, string changelog)
@@ -29,7 +29,7 @@ namespace MMI_SP
         
         private const string _urlVersionFile = "https://raw.githubusercontent.com/Bob74/MMI-SP/master/version";
         private const string _urlVersionChangelogFile = "https://raw.githubusercontent.com/Bob74/MMI-SP/master/versionlog";
-        private static Version _currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+        private readonly static Version _currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
         public static void CheckForUpdate()
         {
@@ -126,17 +126,19 @@ namespace MMI_SP
                         }
                         else
                         {
-                            Debug.DebugNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
+                            Tools.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
                             textToDiplay = line;
                         }
                     }
                     // Displays the last line
                     if (textToDiplay != "" && textToDiplay != "\r" && textToDiplay != "\n" && textToDiplay != "\r\n")
-                        Debug.DebugNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
+                    {
+                        Tools.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
+                    }
                 }
                 else
                 {
-                    Debug.DebugNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), text);
+                    Tools.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), text);
                 }
             }
             catch (Exception e)

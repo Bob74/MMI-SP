@@ -6,7 +6,7 @@ using System.IO;
 /// </summary>
 static class Logger
 {
-    private static string logFileName = "MMI-SP.log";
+    private const string logFileName = "MMI-SP.log";
     public static void ResetLogFile()
     {
         FileStream fs = File.Create(logFileName);

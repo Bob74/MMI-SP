@@ -20,7 +20,7 @@ namespace MMI_SP
         public bool recovered;
         public object[] additional;
         public bool hasReachedDestination = false;
-        public InsuranceManager.EntityPosition originalPosition = new InsuranceManager.EntityPosition(Vector3.Zero, 0f);
+        public EntityPosition originalPosition = new EntityPosition(Vector3.Zero, 0f);
 
         private static readonly List<PedHash> _drivers = new List<PedHash> { PedHash.Car3Guy2, PedHash.Xmech01SMY, PedHash.Autoshop01SMM, PedHash.Autoshop02SMM };
         public static List<PedHash> Drivers => _drivers;
@@ -43,8 +43,8 @@ namespace MMI_SP
             calledTime = Game.GameTime;
             price = cost;
             recovered = isRecovered;
-            originalPosition.position = originPos;
-            originalPosition.heading = originHeading;
+            originalPosition.Position = originPos;
+            originalPosition.Heading = originHeading;
             additional = add;
         }
 
@@ -120,13 +120,13 @@ namespace MMI_SP
                 startPosition = startPosition.Around(InsuranceObserver.BringVehicleRadius);
             } while (Game.Player.Character.Position.DistanceTo(startPosition) < (int)(InsuranceObserver.BringVehicleRadius * 0.8));
 
-            InsuranceManager.EntityPosition vehPos = Tools.GetVehicleSpawnLocation(startPosition);
-            veh.Position = vehPos.position;
-            veh.Heading = vehPos.heading;
+            EntityPosition vehPos = Tools.GetVehicleSpawnLocation(startPosition);
+            veh.Position = vehPos.Position;
+            veh.Heading = vehPos.Heading;
             veh.PreviouslyOwnedByPlayer = true;
             veh.EngineRunning = true;
 
-            Vector3 destination = Tools.GetVehicleSpawnLocation(Game.Player.Character.Position).position;
+            Vector3 destination = Tools.GetVehicleSpawnLocation(Game.Player.Character.Position).Position;
 
             Ped driver = CreateDriver(veh);
             driver.Task.DriveTo(veh, destination, 0f, 10.0f, (int)DrivingStyle.IgnoreLights);
@@ -137,7 +137,7 @@ namespace MMI_SP
         private static Ped CreateDriver(Vehicle vehicle)
         {
             Vector3 npcPos = vehicle.Position;
-            npcPos.X = npcPos.X + 5.0f;
+            npcPos.X += 5f;
 
             PedHash driverModel = Drivers[new Random().Next(0, Drivers.Count - 1)];
 

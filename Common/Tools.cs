@@ -132,11 +132,12 @@ namespace MMI_SP
 
             foreach (string file in files)
             {
-                FileInfo info = new FileInfo(file);
                 FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(file);
 
                 if (new Version(fileVersion.ProductVersion).CompareTo(targetVersion) >= 0)
+                {
                     return true;
+                }
             }
 
             return false;
@@ -203,8 +204,9 @@ namespace MMI_SP
                 float newHeading = outHeading.GetResult<float>();
 
                 if (!Function.Call<bool>(Hash.IS_POINT_OBSCURED_BY_A_MISSION_ENTITY, newPos.X, newPos.Y, newPos.Z, 5.0f, 5.0f, 5.0f, 0))
+                {
                     return new EntityPosition(newPos, newHeading);
-
+                }
             }
 
             return new EntityPosition(position, 0f);

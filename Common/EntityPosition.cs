@@ -4,14 +4,13 @@ namespace MMI_SP
 {
     internal class EntityPosition
     {
-        public Vector3 position;
-        public float heading;
+        public Vector3 Position;
+        public float Heading;
 
-        public EntityPosition(Vector3 pos, float h)
+        public EntityPosition(Vector3 position, float heading)
         {
-            position = pos;
-            heading = h;
+            Position = position;
+            Heading = heading;
         }
     }
-
 }

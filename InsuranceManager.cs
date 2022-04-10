@@ -43,7 +43,7 @@ namespace MMI_SP
         public enum SpawnNode { Vehicle, Helicopter, Plane, Boat };
 
         // Vehicle spawn nodes
-        private static List<EntityPosition> _spawnListVehicle = new List<EntityPosition> {
+        private readonly static List<EntityPosition> _spawnListVehicle = new List<EntityPosition> {
             new EntityPosition(new Vector3(-225.2716f, -1182.783f, 22.49698f), 2.3600f),
             new EntityPosition(new Vector3(-229.9406f, -1182.361f, 22.49209f), 6.1440f),
             new EntityPosition(new Vector3(-234.6615f, -1182.197f, 22.48984f), 355.5509f),
@@ -63,13 +63,13 @@ namespace MMI_SP
             new EntityPosition(new Vector3(-211.5235f, -1150.303f, 22.55123f), 268.1985f),
             new EntityPosition(new Vector3(-198.5835f, -1150.331f, 22.54078f), 269.7671f)};
 
-        private static List<EntityPosition> _spawnListVehicleLong = new List<EntityPosition> {
+        private readonly static List<EntityPosition> _spawnListVehicleLong = new List<EntityPosition> {
             new EntityPosition(new Vector3(-157.9389f, -1162.761f, 24.11157f), 0.6600574f),
             new EntityPosition(new Vector3(-236.0531f, -1149.395f, 23.04231f), 269.1866f),
             new EntityPosition(new Vector3(-174.2821f, -1149.661f, 23.17635f), 269.3501f),
             new EntityPosition(new Vector3(-200.4261f, -1182.882f, 23.1067f), 90.51575f)};
 
-        private static List<EntityPosition> _spawnListHeli = new List<EntityPosition> {
+        private readonly static List<EntityPosition> _spawnListHeli = new List<EntityPosition> {
             new EntityPosition(new Vector3(-746.6312f, -1432.797f, 4.71605f), 231.0658f),
             new EntityPosition(new Vector3(-763.4095f, -1453.074f, 4.722716f), 234.3286f),
             new EntityPosition(new Vector3(-746.3437f, -1469.839f, 4.718675f), 322.4937f),
@@ -77,13 +77,13 @@ namespace MMI_SP
             new EntityPosition(new Vector3(-700.242f, -1447.846f, 4.71675f), 53.22678f),
             new EntityPosition(new Vector3(-723.8517f, -1442.887f, 4.716637f), 139.5879f)};
 
-        private static List<EntityPosition> _spawnListPlane = new List<EntityPosition> {
+        private readonly static List<EntityPosition> _spawnListPlane = new List<EntityPosition> {
             new EntityPosition(new Vector3(1638.067f, 3234.868f, 40.11113f), 103.8905f),
             new EntityPosition(new Vector3(1558.921f, 3155.603f, 40.23004f), 134.3105f),
             new EntityPosition(new Vector3(1430.566f, 3111.669f, 40.23326f), 103.7299f),
             new EntityPosition(new Vector3(2071.546f, 4786.328f, 40.79108f), 115.6482f)};
 
-        private static List<EntityPosition> _spawnListBoat = new List<EntityPosition> {
+        private readonly static List<EntityPosition> _spawnListBoat = new List<EntityPosition> {
             new EntityPosition(new Vector3(-989.812f, -1395.955f, 0.3117422f), 197.2292f),
             new EntityPosition(new Vector3(-998.601f, -1400.204f, -0.01398028f), 200.5666f),
             new EntityPosition(new Vector3(-982.6636f, -1392.835f, -0.1012118f), 200.7435f),
@@ -105,7 +105,7 @@ namespace MMI_SP
             new EntityPosition(new Vector3(-724.7479f, -1327.435f, 0.02641343f), 52.78964f),
             new EntityPosition(new Vector3(-855.8542f, -1485.853f, 0.0313217f), 108.474f)};
 
-        private static List<EntityPosition> _spawnListMilitary = new List<EntityPosition> {
+        private readonly static List<EntityPosition> _spawnListMilitary = new List<EntityPosition> {
             new EntityPosition(new Vector3(-1594.426f, 3185.479f, 30.40495f), 147.6925f),
             new EntityPosition(new Vector3(-1603.479f, 3203.978f, 30.41406f), 171.5964f),
             new EntityPosition(new Vector3(-1615.621f, 3169.568f, 29.66991f), 223.9812f),
@@ -115,11 +115,9 @@ namespace MMI_SP
             new EntityPosition(new Vector3(-1565.328f, 3020.8f, 32.43408f), 121.0561f),
             new EntityPosition(new Vector3(-1668.656f, 3081.12f, 30.85717f), 231.5131f)};
 
-    // Database file
-    private static string _dbFilePath = AppDomain.CurrentDomain.BaseDirectory + "\\MMI\\db.xml";
+        // Database file
+        private readonly static string _dbFilePath = AppDomain.CurrentDomain.BaseDirectory + "\\MMI\\db.xml";
         private XElement _dbFile; // Avoid loading the file for every request
-
-
 
         /// <summary>
         /// Raised when a vehicle is insured.
@@ -662,7 +660,7 @@ namespace MMI_SP
            {
                 if (veh.Exists())
                 {
-                    string friendlyname = "";
+                    string friendlyname;
 
                     int modelClass = Function.Call<int>(Hash.GET_VEHICLE_CLASS_FROM_NAME, veh.Model.Hash);
                     string modelClassName = Game.GetGXTEntry("VEH_CLASS_" + modelClass.ToString());
@@ -711,7 +709,7 @@ namespace MMI_SP
                 int n = rnd.Next(0, templist.Count - 1);
                 EntityPosition spawn = templist[n];
 
-                if (!Function.Call<bool>(Hash.IS_POINT_OBSCURED_BY_A_MISSION_ENTITY, spawn.position.X, spawn.position.Y, spawn.position.Z, 5.0f, 5.0f, 5.0f, 0))
+                if (!Function.Call<bool>(Hash.IS_POINT_OBSCURED_BY_A_MISSION_ENTITY, spawn.Position.X, spawn.Position.Y, spawn.Position.Z, 5.0f, 5.0f, 5.0f, 0))
                     return spawn;
                 else
                     templist.Remove(spawn);
@@ -720,8 +718,8 @@ namespace MMI_SP
             // If no suitable spot has been found, we clear a random one
             EntityPosition clearSpawn = _spawnListVehicle[rnd.Next(0, _spawnListVehicle.Count - 1)];
 
-            Function.Call(Hash.CLEAR_AREA_OF_VEHICLES, clearSpawn.position.X, clearSpawn.position.Y, clearSpawn.position.Z, 1.0f, false, false, false, false, false);
-            Vehicle missionEntity = World.GetClosestVehicle(clearSpawn.position, 1.0f);
+            Function.Call(Hash.CLEAR_AREA_OF_VEHICLES, clearSpawn.Position.X, clearSpawn.Position.Y, clearSpawn.Position.Z, 1.0f, false, false, false, false, false);
+            Vehicle missionEntity = World.GetClosestVehicle(clearSpawn.Position, 1.0f);
 
             // If it was a recovered car, we remove the Blip
             InsuranceObserver.RemoveRecoverBlip(missionEntity);
@@ -1087,8 +1085,8 @@ namespace MMI_SP
                         veh.IsPersistent = true;
                         Function.Call(Hash.SET_ENTITY_LOAD_COLLISION_FLAG, veh, true);
                         EntityPosition node = GetVehicleRecoverNode(veh);
-                        veh.Position = node.position;
-                        veh.Heading = node.heading;
+                        veh.Position = node.Position;
+                        veh.Heading = node.Heading;
 
                         // Plate
                         if (vehSection.Element("Plate") != null)

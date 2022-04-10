@@ -171,9 +171,9 @@ namespace MMI_SP
                     if (InsuranceManager.IsVehicleInsurable(_previousVehicle))
                     {
                         if (InsuranceManager.IsVehicleInsured(_previousVehicle))
-                            SE.UI.DrawTexture(AppDomain.CurrentDomain.BaseDirectory + "\\MMI\\insurance.png", 4500, 0.955f, 0.83f, Color.FromArgb(35, 199, 128));
+                            SE.UI.DrawTexture(Config.InsuranceImage, 4500, 0.955f, 0.83f, Color.FromArgb(35, 199, 128));
                         else
-                            SE.UI.DrawTexture(AppDomain.CurrentDomain.BaseDirectory + "\\MMI\\insurance.png", 4500, 0.955f, 0.83f, Color.FromArgb(190, 0, 50));
+                            SE.UI.DrawTexture(Config.InsuranceImage, 4500, 0.955f, 0.83f, Color.FromArgb(190, 0, 50));
                     }
                 }
             }
@@ -266,10 +266,7 @@ namespace MMI_SP
                     {
                         string vehIdentifier = Tools.GetVehicleIdentifier(currenVeh);
 
-                        SE.UI.DrawNotification("char_mp_mors_mutual",
-                            "MORS MUTUAL INSURANCE",
-                            T.GetString("NotifyVehicleDestroyedTitle"),
-                            T.GetString("NotifyVehicleDestroyedSubtitle"));
+                        SE.UI.DrawNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("NotifyVehicleDestroyedTitle"), T.GetString("NotifyVehicleDestroyedSubtitle"));
 
                         _im.SetVehicleStatusToDB(vehIdentifier, "Dead");
                         _im.UpdateVehicleToDB(currenVeh); // Save the last configuration of the vehicle
@@ -308,10 +305,7 @@ namespace MMI_SP
                     if (recoveredVehicle.Exists())
                     {
                         if (recoveredVehicle.IsAlive)
-                            SE.UI.DrawNotification("char_mp_mors_mutual",
-                                "MORS MUTUAL INSURANCE",
-                                T.GetString("NotifyVehicleRecoveredTitle"),
-                                T.GetString("NotifyVehicleRecoveredSubtitle"));
+                            SE.UI.DrawNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("NotifyVehicleRecoveredTitle"), T.GetString("NotifyVehicleRecoveredSubtitle"));
 
                         // Remove persistence
                         if (!PersistentVehicles) recoveredVehicle.IsPersistent = false;
@@ -439,9 +433,9 @@ namespace MMI_SP
                         IncomingVehicle.BringBoat(veh, cost, recoveredVehicle);
                     else
                     {
-                        InsuranceManager.EntityPosition pos = Tools.GetVehicleSpawnLocation(Game.Player.Character.Position);
-                        veh.Position = pos.position;
-                        veh.Heading = pos.heading;
+                        EntityPosition pos = Tools.GetVehicleSpawnLocation(Game.Player.Character.Position);
+                        veh.Position = pos.Position;
+                        veh.Heading = pos.Heading;
                     }
 
                     // If it isn't a recovered vehicle, it doesn't have a Blip yet
@@ -487,15 +481,12 @@ namespace MMI_SP
                 }
             }
             else
-                Logger.Info("Error: BringVehicleToPlayer - The vehicle doesn't exist!");
+                Logger.Error("BringVehicleToPlayer - The vehicle doesn't exist!");
         }
 
         internal void CannotBringVehicle(IncomingVehicle incoming, int refund = 0)
         {
-            SE.UI.DrawNotification("char_mp_mors_mutual",
-                        "MORS MUTUAL INSURANCE",
-                        T.GetString("BringVehicle"),
-                        T.GetString("NotifyBringVehicleCancel"));
+            SE.UI.DrawNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("BringVehicle"), T.GetString("NotifyBringVehicleCancel"));
 
             // Refund the player
             if (refund == 0)
@@ -506,7 +497,7 @@ namespace MMI_SP
             // Remove the driver
             incoming.driver.Delete();
 
-            if (incoming.originalPosition.position != Vector3.Zero)
+            if (incoming.originalPosition.Position != Vector3.Zero)
             {
                 // Remove Blip
                 RemoveRecoverBlip(incoming.vehicle);
@@ -514,8 +505,8 @@ namespace MMI_SP
                 if (!incoming.vehicle.IsDead)
                 {
                     // Put the vehicle back in place
-                    incoming.vehicle.Position = incoming.originalPosition.position;
-                    incoming.vehicle.Heading = incoming.originalPosition.heading;
+                    incoming.vehicle.Position = incoming.originalPosition.Position;
+                    incoming.vehicle.Heading = incoming.originalPosition.Heading;
                     incoming.vehicle.EngineRunning = false;
                     incoming.vehicle.Repair();
                 }
@@ -525,9 +516,9 @@ namespace MMI_SP
             {
                 if (!incoming.vehicle.IsDead)
                 {
-                    InsuranceManager.EntityPosition vehiclePos = InsuranceManager.GetVehicleRecoverNode(incoming.vehicle);
-                    incoming.vehicle.Position = vehiclePos.position;
-                    incoming.vehicle.Heading = vehiclePos.heading;
+                    EntityPosition vehiclePos = InsuranceManager.GetVehicleRecoverNode(incoming.vehicle);
+                    incoming.vehicle.Position = vehiclePos.Position;
+                    incoming.vehicle.Heading = vehiclePos.Heading;
                     incoming.vehicle.EngineRunning = false;
                     incoming.vehicle.Repair();
                 }

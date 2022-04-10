@@ -6,6 +6,7 @@ using GTA;
 /*
     Update assembly version before release!
 */
+
 namespace MMI_SP
 {
     internal class MMI : Script
