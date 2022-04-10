@@ -14,18 +14,6 @@ namespace MMI_SP
 {
     public class InsuranceManager
     {
-        public class EntityPosition
-        {
-            public Vector3 position;
-            public float heading;
-
-            public EntityPosition(Vector3 pos, float h)
-            {
-                position = pos;
-                heading = h;
-            }
-        }
-
         public delegate void VehicleIsNowInsured(InsuranceManager sender, Vehicle veh);
         public delegate void VehicleNoLongerInsured(InsuranceManager sender, string vehIdentifier);
         public delegate void VehicleRecovered(InsuranceManager sender, Vehicle veh, Blip blip);
@@ -697,7 +685,7 @@ namespace MMI_SP
         /////////////////////////////////////////////////// VEHICLE CREATION METHODS ///////////////////////////////////////////////////
 
         
-        public static EntityPosition GetVehicleRecoverNode(Vehicle veh)
+        internal static EntityPosition GetVehicleRecoverNode(Vehicle veh)
         {
             List<EntityPosition> templist = new List<EntityPosition>();
             if (veh.Model.IsHelicopter || veh.Model.IsCargobob)

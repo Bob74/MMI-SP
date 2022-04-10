@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="Agency\Agency.cs" />
     <Compile Include="Agency\Cutscenes.cs" />
+    <Compile Include="Common\EntityPosition.cs" />
     <Compile Include="DialogueManager.cs" />
     <Compile Include="IncomingVehicle.cs" />
     <Compile Include="MenuMMI.cs" />

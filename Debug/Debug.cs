@@ -83,26 +83,5 @@ namespace MMI_SP
                 SE.UI.DrawText("Assuré: " + InsuranceManager.IsVehicleInsured(Tools.GetVehicleIdentifier(veh)).ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
             }
         }
-
-        /// <summary>
-        /// Important !
-        /// Permet d'afficher une notification même si SHVDN-Extender n'est pas installé (self check d'initialisation).
-        /// </summary>
-        /// <param name="picture"></param>
-        /// <param name="title"></param>
-        /// <param name="subtitle"></param>
-        /// <param name="message"></param>
-        public static void DebugNotification(string picture, string title, string subtitle, string message)
-        {
-            Function.Call(Hash.REQUEST_STREAMED_TEXTURE_DICT, picture, false);
-            while (!Function.Call<bool>(Hash.HAS_STREAMED_TEXTURE_DICT_LOADED, picture))
-                Script.Yield();
-
-            Function.Call(Hash._SET_NOTIFICATION_TEXT_ENTRY, "STRING");
-            Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, message);
-            Function.Call(Hash._SET_NOTIFICATION_MESSAGE, picture, picture, false, 4, title, subtitle);
-            Function.Call(Hash._DRAW_NOTIFICATION, false, true);
-        }
-
     }
 }

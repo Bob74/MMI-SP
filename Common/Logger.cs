@@ -16,7 +16,7 @@ static class Logger
     {
         if (MMI_SP.MMI.IsDebug)
         {
-            Log("Debug - " + MMI_SP.Tools.GetCurrentMethod(1) + message);
+            Log("Debug - " + MMI_SP.Tools.GetCurrentMethod(1) + " " + message);
         }
     }
     public static void Info(object message)

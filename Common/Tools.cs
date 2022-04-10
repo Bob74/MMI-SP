@@ -13,11 +13,11 @@ using GTA.Math;
 namespace MMI_SP
 {
 
-    public static class Tools
+    internal static class Tools
     {
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static string GetCurrentMethod(int offset = 0)
+        internal static string GetCurrentMethod(int offset = 0)
         {
             var methodInfo = new StackTrace().GetFrame(1 + offset).GetMethod();
             var clasName = methodInfo.ReflectedType.Name;
@@ -25,7 +25,7 @@ namespace MMI_SP
             return $"{ clasName }.{ methodInfo.Name }";
         }
 
-        public static void ShowVehicleInfo(Vehicle veh, float x = 0.825f, float y = 0.65f)
+        internal static void ShowVehicleInfo(Vehicle veh, float x = 0.825f, float y = 0.65f)
         {
             Vehicle current = Game.Player.Character.CurrentVehicle;
             if (veh != null)
@@ -49,31 +49,32 @@ namespace MMI_SP
                 y += 0.025f;
                 SE.UI.DrawText("GameplayCamera: " + GameplayCamera.IsRendering, 0, false, x, y, 0.4f, 255, 255, 255, 255);
                 y += 0.025f;
-                SE.UI.DrawText("Assuré: " + InsuranceManager.IsVehicleInsured(Tools.GetVehicleIdentifier(veh)).ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
+                SE.UI.DrawText("Insured: " + InsuranceManager.IsVehicleInsured(GetVehicleIdentifier(veh)).ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
             }
         }
 
         /// <summary>
-        /// Important !
-        /// Permet d'afficher une notification même si SHVDN-Extender n'est pas installé (self check d'initialisation).
+        /// Allow notifications even if SHVDN-Extender is not installed (self check of initialization).
         /// </summary>
         /// <param name="picture"></param>
         /// <param name="title"></param>
         /// <param name="subtitle"></param>
         /// <param name="message"></param>
-        public static void DebugNotification(string picture, string title, string subtitle, string message)
+        internal static void ShowNotification(string picture, string title, string subtitle, string message)
         {
             Function.Call(Hash.REQUEST_STREAMED_TEXTURE_DICT, picture, false);
             while (!Function.Call<bool>(Hash.HAS_STREAMED_TEXTURE_DICT_LOADED, picture))
+            {
                 Script.Yield();
+            }
 
             Function.Call(Hash._SET_NOTIFICATION_TEXT_ENTRY, "STRING");
             Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, message);
             Function.Call(Hash._SET_NOTIFICATION_MESSAGE, picture, picture, false, 4, title, subtitle);
             Function.Call(Hash._DRAW_NOTIFICATION, false, true);
         }
-        
-        public static string ToHexString(string str)
+
+        internal static string ToHexString(string str)
         {
             var sb = new StringBuilder();
 
@@ -86,7 +87,7 @@ namespace MMI_SP
             return sb.ToString(); // returns: "48656C6C6F20776F726C64" for "Hello world"
         }
 
-        public static string FromHexString(string hexString)
+        internal static string FromHexString(string hexString)
         {
             var bytes = new byte[hexString.Length / 2];
             for (var i = 0; i < bytes.Length; i++)
@@ -97,7 +98,7 @@ namespace MMI_SP
             return Encoding.Unicode.GetString(bytes); // returns: "Hello world" for "48656C6C6F20776F726C64"
         }
 
-        public enum VisualCVersion
+        internal enum VisualCVersion
         {
             Visual_2017,
             Visual_2015,
@@ -119,7 +120,7 @@ namespace MMI_SP
             { VisualCVersion.Visual_2005, new Version("8.0.0.0")}
         };
 
-        public static bool IsVisualCVersionHigherOrEqual(VisualCVersion visualC)
+        internal static bool IsVisualCVersionHigherOrEqual(VisualCVersion visualC)
         {
             Version targetVersion = visualCVersion[visualC];
 
@@ -142,7 +143,7 @@ namespace MMI_SP
         }
 
 
-        public static Version GetNETFrameworkVersion()
+        internal static Version GetNETFrameworkVersion()
         {
             using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey("SOFTWARE\\Microsoft\\NET Framework Setup\\NDP\\v4\\Full\\"))
             {
@@ -182,14 +183,14 @@ namespace MMI_SP
         /// </summary>
         /// <param name="veh"></param>
         /// <returns></returns>
-        public static string GetVehicleIdentifier(Vehicle veh)
+        internal static string GetVehicleIdentifier(Vehicle veh)
         {
             string vehIdentifier = SE.Player.GetCurrentCharacterName() + veh.Model.Hash.ToString() + veh.NumberPlate;
             vehIdentifier = vehIdentifier.Replace(" ", "_");
             return vehIdentifier;
         }
- 
-        public static InsuranceManager.EntityPosition GetVehicleSpawnLocation(Vector3 position)
+
+        internal static EntityPosition GetVehicleSpawnLocation(Vector3 position)
         {
             for (int index = 0; index < 22; ++index)
             {
@@ -202,11 +203,11 @@ namespace MMI_SP
                 float newHeading = outHeading.GetResult<float>();
 
                 if (!Function.Call<bool>(Hash.IS_POINT_OBSCURED_BY_A_MISSION_ENTITY, newPos.X, newPos.Y, newPos.Z, 5.0f, 5.0f, 5.0f, 0))
-                    return new InsuranceManager.EntityPosition(newPos, newHeading);
+                    return new EntityPosition(newPos, newHeading);
 
             }
 
-            return new InsuranceManager.EntityPosition(position, 0f);
+            return new EntityPosition(position, 0f);
         }
 
     }

@@ -7,7 +7,7 @@ namespace MMI_SP
 {
     internal static class SelfCheck
     {
-        public static bool ArePrerequisitesInstalled()
+        internal static bool ArePrerequisitesInstalled()
         {
             bool installed = true;
             Version dotNetVersion = new Version("4.8.0.0");
@@ -32,14 +32,14 @@ namespace MMI_SP
                     int versionCheck = new Version(fileInfo.ProductVersion).CompareTo(prerequisites[key]);
                     if (versionCheck < 0)
                     {
-                        if (Config.ShowFileNotification) Debug.DebugNotification("CHAR_BLOCKED", "MMI-SP", key + " v" + fileInfo.ProductVersion + " is outdated!", "Download and install the latest version.");
+                        if (Config.ShowFileNotification) Tools.ShowNotification("CHAR_BLOCKED", "MMI-SP", key + " v" + fileInfo.ProductVersion + " is outdated!", "Download and install the latest version.");
                         Logger.Info("Error: " + key + " v" + fileInfo.ProductVersion + " is outdated!");
                         installed = false;
                     }
                 }
                 else
                 {
-                    if (Config.ShowFileNotification) Debug.DebugNotification("CHAR_BLOCKED", "MMI-SP", key + " is missing!", "Download and install this file before starting the game.");
+                    if (Config.ShowFileNotification) Tools.ShowNotification("CHAR_BLOCKED", "MMI-SP", key + " is missing!", "Download and install this file before starting the game.");
                     Logger.Info("Error: " + key + " is missing!");
                     installed = false;
                 }
@@ -52,7 +52,7 @@ namespace MMI_SP
                 DateTime date = info.LastWriteTime;
                 if (date < SHVDNDate)
                 {
-                    if (Config.ShowSHVDNNotification) Debug.DebugNotification("CHAR_BLOCKED", "MMI-SP", "ScriptHookVDotNet2 is outdated!", "Download and install the latest version.");
+                    if (Config.ShowSHVDNNotification) Tools.ShowNotification("CHAR_BLOCKED", "MMI-SP", "ScriptHookVDotNet2 is outdated!", "Download and install the latest version.");
                     Logger.Info("Error: ScriptHookVDotNet2 is outdated!");
                     installed = false;
                 }
@@ -60,13 +60,13 @@ namespace MMI_SP
 
             if (!Tools.IsVisualCVersionHigherOrEqual(Tools.VisualCVersion.Visual_2015))
             {
-                if (Config.ShowVisualCNotification) Debug.DebugNotification("CHAR_BLOCKED", "MMI-SP", "Microsoft Visual C++ is missing!", "Download and install version 2015 or 2017 x64.");
+                if (Config.ShowVisualCNotification) Tools.ShowNotification("CHAR_BLOCKED", "MMI-SP", "Microsoft Visual C++ is missing!", "Download and install version 2015 or 2017 x64.");
                 Logger.Info("Error: Microsoft Visual C++ 2015 and 2017 x64 is missing!");
                 installed = false;
             }
             if (Tools.GetNETFrameworkVersion().CompareTo(dotNetVersion) < 0)
             {
-                if (Config.ShowNETFrameworkNotification) Debug.DebugNotification("CHAR_BLOCKED", "MMI-SP", "Microsoft .NET Framework is outdated!", "Download and install version 4.8 or later.");
+                if (Config.ShowNETFrameworkNotification) Tools.ShowNotification("CHAR_BLOCKED", "MMI-SP", "Microsoft .NET Framework is outdated!", "Download and install version 4.8 or later.");
                 Logger.Info("Error: Microsoft .NET Framework is outdated!");
                 installed = false;
             }
