@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MMI>
+  <Strings>
+    <Common>
+      <Empty>Empty</Empty>
+    </Common>
+    <Update>
+      <UpdateAvailable>Update available!</UpdateAvailable>
+      <UpdateText>A new version of Mors Mutual Insurance Single Player is available!</UpdateText>
+    </Update>
+    <Agency>
+      <AgencyEntry>Press ~INPUT_CONTEXT~ to enter.</AgencyEntry>
+      <AgencyEntryWanted>You cannot enter the building while wanted.</AgencyEntryWanted>
+    </Agency>
+    <Menus>
+      <!-- Insure vehicle -->
+      <InsureVehicle>Insure my current vehicle</InsureVehicle>
+      <InsureVehicleDesc>Insure the last vehicle you've entered:</InsureVehicleDesc>
+      <VehicleWrongType>We are unable to insure this kind of vehicle:</VehicleWrongType>
+      <VehicleAlreadyInsured>This vehicle is already insured:</VehicleAlreadyInsured>
+      <NotifyVehicleIsInsured>This vehicle ~b~$VehicleFriendlyName~w~ is now insured.</NotifyVehicleIsInsured>
+      <NotifyInsureNoMoney>You don't have enought money to insure this vehicle.</NotifyInsureNoMoney>
+
+      <!-- Cancel contract -->
+      <CancelInsurance>Cancel a contract</CancelInsurance>
+      <CancelInsuranceDesc>Cancel the contract of a vehicle.</CancelInsuranceDesc>
+      <CancelInsuranceItemDesc>This vehicle won't be insured anymore.</CancelInsuranceItemDesc>
+      <CancelInsuranceItemEmptyDesc>You don't have any insured vehicle.</CancelInsuranceItemEmptyDesc>
+      <NotifyCanceled>This vehicle is not insured anymore.</NotifyCanceled>
+
+      <!-- Recover vehicle -->
+      <RecoverVehicle>Recover a destroyed vehicle</RecoverVehicle>
+      <RecoverVehicleDesc>Recover any of your insured destroyed vehicles.</RecoverVehicleDesc>
+      <RecoverVehicleItemEmptyDesc>There are no destroyed vehicles.</RecoverVehicleItemEmptyDesc>
+
+      <!-- Stolen vehicle -->
+      <StolenVehicle>Report a stolen vehicle</StolenVehicle>
+      <StolenVehicleDesc>Recover a vehicle that has disappeared.</StolenVehicleDesc>
+      <StolenVehicleItemEmptyDesc>You don't have any insured vehicle.</StolenVehicleItemEmptyDesc>
+
+      <!-- Bring the vehicle -->
+      <BringVehicle>Bring me my vehicle</BringVehicle>
+      <BringVehicleDesc>Brings the vehicle to you.</BringVehicleDesc>
+      <BringVehicleItemEmptyDesc>You don't have any recovered vehicle.</BringVehicleItemEmptyDesc>
+      <NotifyBringVehicle>Our driver is coming at you.</NotifyBringVehicle>
+      <NotifyBringVehicleCancel>Sorry but aren't able to deliver your vehicle at the moment. You have been refunded.</NotifyBringVehicleCancel>
+
+      <!-- Common -->
+      <NotifyDeliverVehicle>Your vehicle will be delivered at the Mors Mutual depot.</NotifyDeliverVehicle>
+      <NotifyDeliverVehicle>Your replacement vehicle can be found at the Mors Mutual depot.</NotifyDeliverVehicle>
+      <NotifyNoMoney>You don't have enough money.</NotifyNoMoney>
+    </Menus>
+    <UpdateInsurance>
+      <NotifyVehicleDestroyedTitle>Information</NotifyVehicleDestroyedTitle>
+      <NotifyVehicleDestroyedSubtitle>Your Personal Vehicle has been destroyed. You can call Mors Mutual Insurance to make a claim.</NotifyVehicleDestroyedSubtitle>
+      <NotifyVehicleRecoveredTitle>IMPORTANT</NotifyVehicleRecoveredTitle>
+      <NotifyVehicleRecoveredSubtitle>You need to ~h~store your vehicle~h~ in your garage to avoid any problem.</NotifyVehicleRecoveredSubtitle>
+    </UpdateInsurance>
+  </Strings>
+</MMI>

@@ -97,7 +97,7 @@ namespace MMI_SP.iFruit
             {
                 if (item == listItem)
                 {
-                    Config.Settings.SetValue("General", key, item.IndexToItem(index).ToString());
+                    Config.Settings.SetValue("General", key, item.Items[index].ToString());
                     Config.Settings.Save();
                 }
             };
@@ -152,8 +152,8 @@ namespace MMI_SP.iFruit
             {
                 if (item == listItem)
                 {
-                    Config.Settings.SetValue(section, key, ((float)item.IndexToItem(index)).ToString().ToString().Replace(",", "."));
-                    UpdateValue(key, (float)item.IndexToItem(index));
+                    Config.Settings.SetValue(section, key, ((float)item.Items[index]).ToString().ToString().Replace(",", "."));
+                    UpdateValue(key, (float)item.Items[index]);
                     Config.Settings.Save();
                 }
             };
@@ -180,8 +180,8 @@ namespace MMI_SP.iFruit
             {
                 if (item == listItem)
                 {
-                    Config.Settings.SetValue(section, key, (int)item.IndexToItem(index));
-                    UpdateValue(key, (int)item.IndexToItem(index));
+                    Config.Settings.SetValue(section, key, (int)item.Items[index]);
+                    UpdateValue(key, (int)item.Items[index]);
                     Config.Settings.Save();
                 }
             };
