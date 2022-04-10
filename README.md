@@ -1,6 +1,8 @@
 # MMI-SP
 Mors Mutual Insurance - Single Player
 
+Download is available here : https://www.gta5-mods.com/scripts/mors-mutual-insurance-single-player-mmi-sp
+
 # Installation note
 Don't forget to add the "Modify" permission to your user on your PC to allow ScriptHook and the mod to write log files:
 
