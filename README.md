@@ -1,6 +1,11 @@
 # MMI-SP
 Mors Mutual Insurance - Single Player
-(Update files only)
+
+# Installation note
+Don't forget to add the "Modify" permission to your user on your PC to allow ScriptHook and the mod to write log files:
+
+![image](https://user-images.githubusercontent.com/9498543/162616728-39280270-46ee-4db1-80b0-1838b25e5223.png)
+
 
 # Changelog
 1.2.1 (10/04/2022)
