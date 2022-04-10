@@ -1,5 +1,8 @@
 # MMI-SP
-Mors Mutual Insurance - Single Player
+__Mors Mutual Insurance - Single Player__
+
+Tired of losing your 500k$ fully modded vehicle because you went on a mission and it disappeared? Or because you wanted to see if it was waterproof and (unfortunately) it wasn’t?
+Don’t wait any longer and insure your vehicle now at Mors Mutual insurance!
 
 Download is available here : https://www.gta5-mods.com/scripts/mors-mutual-insurance-single-player-mmi-sp
 
