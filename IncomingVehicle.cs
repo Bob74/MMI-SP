@@ -53,8 +53,8 @@ namespace MMI_SP
             float zOffset = 80f;
             Vector3 startPosition = Game.Player.Character.Position;
             do {
-                startPosition = startPosition.Around(InsuranceObserver.BringVehicleRadius);
-            } while (Game.Player.Character.Position.DistanceTo(startPosition) < (int)(InsuranceObserver.BringVehicleRadius * 0.95));
+                startPosition = startPosition.Around(Config.BringVehicleRadius);
+            } while (Game.Player.Character.Position.DistanceTo(startPosition) < (int)(Config.BringVehicleRadius * 0.95));
 
             startPosition.Z += World.GetGroundHeight(startPosition) + zOffset;
             veh.Position = startPosition;
@@ -74,7 +74,7 @@ namespace MMI_SP
         public static IncomingVehicle BringPlane(Vehicle veh, int cost, bool recoveredVehicle)
         {
             float zOffset = 80f;
-            Vector3 startPosition = Game.Player.Character.GetOffsetInWorldCoords(new Vector3(0f, -5 * InsuranceObserver.BringVehicleRadius, 0f));
+            Vector3 startPosition = Game.Player.Character.GetOffsetInWorldCoords(new Vector3(0f, -5 * Config.BringVehicleRadius, 0f));
             if ((World.GetGroundHeight(startPosition) + zOffset) < Game.Player.Character.Position.Z)
                 startPosition.Z = Game.Player.Character.Position.Z + zOffset;
             else
@@ -117,8 +117,8 @@ namespace MMI_SP
         {
             Vector3 startPosition = Game.Player.Character.Position;
             do {
-                startPosition = startPosition.Around(InsuranceObserver.BringVehicleRadius);
-            } while (Game.Player.Character.Position.DistanceTo(startPosition) < (int)(InsuranceObserver.BringVehicleRadius * 0.8));
+                startPosition = startPosition.Around(Config.BringVehicleRadius);
+            } while (Game.Player.Character.Position.DistanceTo(startPosition) < (int)(Config.BringVehicleRadius * 0.8));
 
             EntityPosition vehPos = Tools.GetVehicleSpawnLocation(startPosition);
             veh.Position = vehPos.Position;

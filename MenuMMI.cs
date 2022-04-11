@@ -56,14 +56,14 @@ namespace MMI_SP
         internal void Create()
         {
             if (System.IO.File.Exists(_banner)) _mainMenu.SetBannerType(_banner);
-
+            
             if (OpenedFromiFruit)
             {
-                if (iFruitMMI.CaniFruitInsure) BuildItemInsure();
-                if (iFruitMMI.CaniFruitCancel) CreateMenuCancel(_mainMenu);
-                if (iFruitMMI.CaniFruitRecover) CreateMenuRecover(_mainMenu);
-                if (iFruitMMI.CaniFruitStolen) CreateMenuStolen(_mainMenu);
-                if (iFruitMMI.CaniFruitPlate) CreateMenuPlate(_mainMenu);
+                if (Config.CaniFruitInsure) BuildItemInsure();
+                if (Config.CaniFruitCancel) CreateMenuCancel(_mainMenu);
+                if (Config.CaniFruitRecover) CreateMenuRecover(_mainMenu);
+                if (Config.CaniFruitStolen) CreateMenuStolen(_mainMenu);
+                if (Config.CaniFruitPlate) CreateMenuPlate(_mainMenu);
                 CreateMenuBring(_mainMenu);
             }
             else
@@ -98,8 +98,7 @@ namespace MMI_SP
             {
                 if (menu.MenuItems.Count <= 0)
                 {
-                    UIMenuItem cancelContract = new UIMenuItem(T.GetString("Empty"), itemDescription);
-                    cancelContract.Enabled = false;
+                    UIMenuItem cancelContract = new UIMenuItem(T.GetString("Empty"), itemDescription) { Enabled = false };
                     menu.AddItem(cancelContract);
 
                     menu.CurrentSelection = 0;
@@ -134,15 +133,13 @@ namespace MMI_SP
                     }
                     else
                     {
-                        _itemInsure = new UIMenuItem(T.GetString("InsureVehicle"), T.GetString("VehicleWrongType") + " " + SE.Vehicle.GetVehicleFriendlyName(veh) + ".");
-                        _itemInsure.Enabled = false;
+                        _itemInsure = new UIMenuItem(T.GetString("InsureVehicle"), T.GetString("VehicleWrongType") + " " + SE.Vehicle.GetVehicleFriendlyName(veh) + ".") { Enabled = false };
                         _mainMenu.AddItem(_itemInsure);
                     }
                 }
                 else
                 {
-                    _itemInsure = new UIMenuItem(T.GetString("InsureVehicle"), T.GetString("VehicleAlreadyInsured") + "\n" + SE.Vehicle.GetVehicleFriendlyName(veh, false) + ".");
-                    _itemInsure.Enabled = false;
+                    _itemInsure = new UIMenuItem(T.GetString("InsureVehicle"), T.GetString("VehicleAlreadyInsured") + "\n" + SE.Vehicle.GetVehicleFriendlyName(veh, false) + ".") { Enabled = false };
                     _mainMenu.AddItem(_itemInsure);
                 }
 
@@ -300,8 +297,7 @@ namespace MMI_SP
             }
             else
             {
-                UIMenuItem cancelContract = new UIMenuItem(T.GetString("Empty"), T.GetString("CancelInsuranceItemEmptyDesc"));
-                cancelContract.Enabled = false;
+                UIMenuItem cancelContract = new UIMenuItem(T.GetString("Empty"), T.GetString("CancelInsuranceItemEmptyDesc")) { Enabled = false };
                 _submenuCancel.AddItem(cancelContract);
             }
         }
@@ -361,8 +357,7 @@ namespace MMI_SP
             }
             else
             {
-                UIMenuItem recoverVehicle = new UIMenuItem(T.GetString("Empty"), T.GetString("RecoverVehicleItemEmptyDesc"));
-                recoverVehicle.Enabled = false;
+                UIMenuItem recoverVehicle = new UIMenuItem(T.GetString("Empty"), T.GetString("RecoverVehicleItemEmptyDesc")) { Enabled = false };
                 _submenuRecover.AddItem(recoverVehicle);
             }
         }
@@ -437,8 +432,7 @@ namespace MMI_SP
             }
             else
             {
-                UIMenuItem stolenVehicle = new UIMenuItem(T.GetString("Empty"), T.GetString("StolenVehicleItemEmptyDesc"));
-                stolenVehicle.Enabled = false;
+                UIMenuItem stolenVehicle = new UIMenuItem(T.GetString("Empty"), T.GetString("StolenVehicleItemEmptyDesc")) { Enabled = false };
                 _submenuStolen.AddItem(stolenVehicle);
             }
         }
@@ -547,8 +541,7 @@ namespace MMI_SP
             }
             else
             {
-                UIMenuItem changePlate = new UIMenuItem(T.GetString("Empty"), T.GetString("PlateChangeItemEmptyDesc"));
-                changePlate.Enabled = false;
+                UIMenuItem changePlate = new UIMenuItem(T.GetString("Empty"), T.GetString("PlateChangeItemEmptyDesc")) { Enabled = false };
                 _submenuPlate.AddItem(changePlate);
             }
         }
@@ -576,7 +569,7 @@ namespace MMI_SP
 
                     if (SE.Player.GetCurrentCharacterName(true) == _insurance.GetVehicleOwner(vehID))
                     {
-                        int cost = (int)((Game.Player.Character.Position.DistanceTo(veh.Position) / 1000) * InsuranceManager.BringVehicleBasePrice);
+                        int cost = (int)((Game.Player.Character.Position.DistanceTo(veh.Position) / 1000) * Config.BringVehicleBasePrice);
                         UIMenuItem bringVehicle = new UIMenuItem(_insurance.GetVehicleFriendlyName(vehID, false), T.GetString("BringVehicleDesc"));
                         bringVehicle.SetRightLabel(cost + "$");
                         _submenuBring.AddItem(bringVehicle);
@@ -588,7 +581,7 @@ namespace MMI_SP
                                 if (SE.Player.AddCashToPlayer(-1 * cost))
                                 {
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
-                                    _observer.BringVehicleToPlayer(veh, cost, InsuranceManager.BringVehicleInstant);
+                                    _observer.BringVehicleToPlayer(veh, cost, Config.BringVehicleInstant);
                                     bringVehicle.Enabled = false;
                                     UI.Notify(T.GetString("NotifyBringVehicle"));
 
@@ -609,8 +602,7 @@ namespace MMI_SP
             }
             else
             {
-                UIMenuItem bringVehicle = new UIMenuItem(T.GetString("Empty"), T.GetString("BringVehicleItemEmptyDesc"));
-                bringVehicle.Enabled = false;
+                UIMenuItem bringVehicle = new UIMenuItem(T.GetString("Empty"), T.GetString("BringVehicleItemEmptyDesc")) { Enabled = false };
                 _submenuBring.AddItem(bringVehicle);
             }
         }
