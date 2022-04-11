@@ -20,7 +20,7 @@ namespace MMI_SP
 
         // InsuranceManager instance
         private static InsuranceManager _instance;
-        public static InsuranceManager GetCurrentInstance() { return _instance; }
+        public static InsuranceManager Instance { get => _instance; }
 
         public enum Multiplier { Insurance, Recover, Stolen };
         public enum SpawnNode { Vehicle, Helicopter, Plane, Boat };

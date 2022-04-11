@@ -27,7 +27,7 @@ namespace MMI_SP
         public static bool Initialized { get => _initialized; private set => _initialized = value; }
 
         private static InsuranceObserver _instance;
-        public static InsuranceObserver GetCurrentInstance() { return _instance; }
+        public static InsuranceObserver Instance { get => _instance; }
 
         private static List<Vehicle> _insuredVehList = new List<Vehicle>();
         public static List<Vehicle> InsuredVehList { get => _insuredVehList; set => _insuredVehList = value; }
@@ -85,8 +85,11 @@ namespace MMI_SP
 
         void Initialize(object sender, EventArgs e)
         {
+            // Waiting for the main plugin to be ready
             while (!MMI.IsInitialized)
+            {
                 Yield();
+            }
 
             _im = new InsuranceManager();
             _im.Insured += OnVehicleInsured;

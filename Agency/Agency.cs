@@ -149,7 +149,7 @@ namespace MMI_SP.Agency
         private void CreateMenuMMI()
         {
             _menuMMI = new MenuMMI();
-            _menuMMI.GetMainmenu().OnMenuClose += (sender) =>
+            _menuMMI.Mainmenu.OnMenuClose += (sender) =>
             {
                 if (_office.itemsCollection.Type == ItemsManager.CollectionType.Night)
                     _office.NpcSay(DialogueManager.SpeechType.OfficeNaughtyBye);

@@ -23,15 +23,17 @@ static class Logger
     {
         Log("Info - " + message);
     }
-    
     public static void Warning(object message)
     {
         Log("Warning - " + message);
     }
-    
     public static void Error(object message)
     {
         Log("Error - " + message);
+    }
+    public static void Exception(Exception ex)
+    {
+        Log("Exception - " + ex.Message + "\r\n" + ex.StackTrace);
     }
 
     private static void Log(object message)

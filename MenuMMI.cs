@@ -16,17 +16,10 @@ namespace MMI_SP
         internal void MenuPoolProcessMenus() { _menuPool.ProcessMenus(); }
 
         private UIMenu _mainMenu = new UIMenu("", "Menu");
-        internal UIMenu GetMainmenu() { return _mainMenu; }
-
-        private string _banner = "scripts\\MMI\\banner.png";
-
-        private bool _openedFromiFruit = false;
+        internal UIMenu Mainmenu { get => _mainMenu; }
+        
         public bool OpenedFromiFruit { get => _openedFromiFruit; private set => _openedFromiFruit = value; }
-
-        // We need to use the same InsuranceManager in the whole plugin or we will have issues with its variables
-        // (ie: _recovereddVehList would never be checked since it would be in another instance of MMI)
-        private InsuranceManager _insurance = InsuranceManager.GetCurrentInstance();
-        private InsuranceObserver _observer = InsuranceObserver.GetCurrentInstance();
+        private bool _openedFromiFruit = false;
 
         // Sub menus
         UIMenuItem _itemInsure;
@@ -55,7 +48,7 @@ namespace MMI_SP
         /// </summary>
         internal void Create()
         {
-            if (System.IO.File.Exists(_banner)) _mainMenu.SetBannerType(_banner);
+            if (System.IO.File.Exists(Config.BannerImage)) _mainMenu.SetBannerType(Config.BannerImage);
             
             if (OpenedFromiFruit)
             {
@@ -214,7 +207,7 @@ namespace MMI_SP
         private void InsureVehicle(Vehicle veh)
         {
             if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
-            _insurance.InsureVehicle(veh);
+            InsuranceManager.Instance.InsureVehicle(veh);
             UI.Notify(T.GetString("NotifyVehicleIsInsured"));
             _itemInsure.Enabled = false;
 
@@ -243,22 +236,22 @@ namespace MMI_SP
         private void CreateMenuCancel(UIMenu menu)
         {
             _submenuCancel = _menuPool.AddSubMenu(menu, T.GetString("CancelInsurance"), T.GetString("CancelInsuranceDesc"));
-            if (System.IO.File.Exists(_banner)) _submenuCancel.SetBannerType(_banner);
+            if (System.IO.File.Exists(Config.BannerImage)) _submenuCancel.SetBannerType(Config.BannerImage);
             RebuildMenuCancel();
         }
         private void RebuildMenuCancel()
         {
             _submenuCancel.Clear();
 
-            List<string> vehicleList = _insurance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), false);
-            vehicleList.AddRange(_insurance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), true));
+            List<string> vehicleList = InsuranceManager.Instance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), false);
+            vehicleList.AddRange(InsuranceManager.Instance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), true));
 
             if (vehicleList.Count > 0)
             {
                 foreach (string vehID in vehicleList)
                 {
-                    UIMenuItem cancelContract = new UIMenuItem(_insurance.GetVehicleModelName(vehID), T.GetString("CancelInsuranceItemDesc"));
-                    cancelContract.SetRightLabel(_insurance.GetVehicleLicensePlate(vehID));
+                    UIMenuItem cancelContract = new UIMenuItem(InsuranceManager.Instance.GetVehicleModelName(vehID), T.GetString("CancelInsuranceItemDesc"));
+                    cancelContract.SetRightLabel(InsuranceManager.Instance.GetVehicleLicensePlate(vehID));
                     _submenuCancel.AddItem(cancelContract);
 
                     _submenuCancel.OnItemSelect += (sender, item, index) =>
@@ -266,7 +259,7 @@ namespace MMI_SP
                         if (item == cancelContract)
                         {
                             if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
-                            _insurance.CancelVehicle(vehID);
+                            InsuranceManager.Instance.CancelVehicle(vehID);
                             UI.Notify(T.GetString("NotifyCanceled"));
                             cancelContract.Enabled = false;
 
@@ -310,20 +303,20 @@ namespace MMI_SP
         private void CreateMenuRecover(UIMenu menu)
         {
             _submenuRecover = _menuPool.AddSubMenu(menu, T.GetString("RecoverVehicle"), T.GetString("RecoverVehicleDesc"));
-            if (System.IO.File.Exists(_banner)) _submenuRecover.SetBannerType(_banner);
+            if (System.IO.File.Exists(Config.BannerImage)) _submenuRecover.SetBannerType(Config.BannerImage);
             RebuildMenuRecover();
         }
         private void RebuildMenuRecover()
         {
             _submenuRecover.Clear();
 
-            List<string> deadVehicleList = _insurance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), true);
+            List<string> deadVehicleList = InsuranceManager.Instance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), true);
             if (deadVehicleList.Count > 0)
             {
                 foreach (string vehID in deadVehicleList)
                 {
-                    int cost = _insurance.GetVehicleInsuranceCost(vehID, InsuranceManager.Multiplier.Recover);
-                    UIMenuItem recoverVehicle = new UIMenuItem(_insurance.GetVehicleFriendlyName(vehID, false), T.GetString("NotifyDeliverVehicle"));
+                    int cost = InsuranceManager.Instance.GetVehicleInsuranceCost(vehID, InsuranceManager.Multiplier.Recover);
+                    UIMenuItem recoverVehicle = new UIMenuItem(InsuranceManager.Instance.GetVehicleFriendlyName(vehID, false), T.GetString("NotifyDeliverVehicle"));
                     recoverVehicle.SetRightLabel(cost + "$");
                     _submenuRecover.AddItem(recoverVehicle);
 
@@ -334,7 +327,7 @@ namespace MMI_SP
                             if (SE.Player.AddCashToPlayer(-1 * cost))
                             {
                                 if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
-                                _insurance.RecoverVehicle(vehID);
+                                InsuranceManager.Instance.RecoverVehicle(vehID);
                                 UI.Notify(T.GetString("NotifyDeliverVehicle"));
                                 recoverVehicle.Enabled = false;
 
@@ -370,20 +363,20 @@ namespace MMI_SP
         private void CreateMenuStolen(UIMenu menu)
         {
             _submenuStolen = _menuPool.AddSubMenu(menu, T.GetString("StolenVehicle"), T.GetString("StolenVehicleDesc"));
-            if (System.IO.File.Exists(_banner)) _submenuStolen.SetBannerType(_banner);
+            if (System.IO.File.Exists(Config.BannerImage)) _submenuStolen.SetBannerType(Config.BannerImage);
             RebuildMenuStolen();
         }
         private void RebuildMenuStolen()
         {
             _submenuStolen.Clear();
 
-            List<string> aliveVehicleList = _insurance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), false);
+            List<string> aliveVehicleList = InsuranceManager.Instance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), false);
             if (aliveVehicleList.Count > 0)
             {
                 foreach (string vehID in aliveVehicleList)
                 {
-                    int cost = _insurance.GetVehicleInsuranceCost(vehID, InsuranceManager.Multiplier.Stolen);
-                    UIMenuItem stolenVehicle = new UIMenuItem(_insurance.GetVehicleFriendlyName(vehID, false), T.GetString("NotifyDeliverVehicle"));
+                    int cost = InsuranceManager.Instance.GetVehicleInsuranceCost(vehID, InsuranceManager.Multiplier.Stolen);
+                    UIMenuItem stolenVehicle = new UIMenuItem(InsuranceManager.Instance.GetVehicleFriendlyName(vehID, false), T.GetString("NotifyDeliverVehicle"));
                     stolenVehicle.SetRightLabel(cost + "$");
                     _submenuStolen.AddItem(stolenVehicle);
 
@@ -405,7 +398,7 @@ namespace MMI_SP
                                     }
                                 }
 
-                                _insurance.RecoverVehicle(vehID);
+                                InsuranceManager.Instance.RecoverVehicle(vehID);
 
                                 UI.Notify(T.GetString("NotifyDeliverVehicle"));
                                 stolenVehicle.Enabled = false;
@@ -445,7 +438,7 @@ namespace MMI_SP
         private void CreateMenuPlate(UIMenu menu)
         {
             _submenuPlate = _menuPool.AddSubMenu(menu, T.GetString("PlateChange"), T.GetString("PlateChangeDesc"));
-            if (System.IO.File.Exists(_banner)) _submenuPlate.SetBannerType(_banner);
+            if (System.IO.File.Exists(Config.BannerImage)) _submenuPlate.SetBannerType(Config.BannerImage);
             RebuildMenuPlate();
         }
         private void RebuildMenuPlate()
@@ -454,14 +447,14 @@ namespace MMI_SP
 
             _submenuPlate.Clear();
 
-            List<string> vehicleList = _insurance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), false);
-            vehicleList.AddRange(_insurance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), true));
+            List<string> vehicleList = InsuranceManager.Instance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), false);
+            vehicleList.AddRange(InsuranceManager.Instance.GetInsuredVehicles(SE.Player.GetCurrentCharacterName(true), true));
 
             if (vehicleList.Count > 0)
             {
                 foreach (string vehID in vehicleList)
                 {
-                    UIMenuItem changePlate = new UIMenuItem(_insurance.GetVehicleFriendlyName(vehID, false));
+                    UIMenuItem changePlate = new UIMenuItem(InsuranceManager.Instance.GetVehicleFriendlyName(vehID, false));
                     changePlate.SetRightLabel(price.ToString() + "$");
                     _submenuPlate.AddItem(changePlate);
 
@@ -471,7 +464,7 @@ namespace MMI_SP
                         {
                             if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
                             string oldVehID = vehID;
-                            string oldPlate = _insurance.GetVehicleLicensePlate(vehID);
+                            string oldPlate = InsuranceManager.Instance.GetVehicleLicensePlate(vehID);
                             string newPlate = Game.GetUserInput(oldPlate, 7);   // 7 = 8 caractères
                             newPlate = newPlate.PadRight(8);
                             newPlate = newPlate.ToUpperInvariant();
@@ -482,10 +475,10 @@ namespace MMI_SP
                                 {
                                     if (SE.Player.AddCashToPlayer(-1 * price))
                                     {
-                                        string newVehID = _insurance.ChangeVehicleLicensePlate(vehID, newPlate);
+                                        string newVehID = InsuranceManager.Instance.ChangeVehicleLicensePlate(vehID, newPlate);
 
                                         // Refresh item text
-                                        item.Text = _insurance.GetVehicleFriendlyName(newVehID, false);
+                                        item.Text = InsuranceManager.Instance.GetVehicleFriendlyName(newVehID, false);
 
                                         // Update in game vehicle
                                         for (int i = InsuranceObserver.InsuredVehList.Count - 1; i >= 0; i--)
@@ -513,8 +506,8 @@ namespace MMI_SP
 
                                         // Updates
                                         // Need to wait for the vehicle to be detected by the InsuranceObserver's timer
-                                        BigMessageThread.MessageInstance.ShowSimpleShard(T.GetString("PlateChangeUpdateDB"), T.GetString("PlateChangeUpdateDBDesc"), _observer.DelayDetectInsuredVehicles + 1000);
-                                        Script.Wait(_observer.DelayDetectInsuredVehicles + 1000);
+                                        BigMessageThread.MessageInstance.ShowSimpleShard(T.GetString("PlateChangeUpdateDB"), T.GetString("PlateChangeUpdateDBDesc"), InsuranceObserver.Instance.DelayDetectInsuredVehicles + 1000);
+                                        Script.Wait(InsuranceObserver.Instance.DelayDetectInsuredVehicles + 1000);
 
                                         RefreshItemInsure();
 
@@ -554,7 +547,7 @@ namespace MMI_SP
         private void CreateMenuBring(UIMenu menu)
         {
             _submenuBring = _menuPool.AddSubMenu(menu, T.GetString("BringVehicle"), T.GetString("BringVehicleDesc"));
-            if (System.IO.File.Exists(_banner)) _submenuBring.SetBannerType(_banner);
+            if (System.IO.File.Exists(Config.BannerImage)) _submenuBring.SetBannerType(Config.BannerImage);
             RebuildMenuBring();
         }
         private void RebuildMenuBring()
@@ -567,10 +560,10 @@ namespace MMI_SP
                 {
                     string vehID = Tools.GetVehicleIdentifier(veh);
 
-                    if (SE.Player.GetCurrentCharacterName(true) == _insurance.GetVehicleOwner(vehID))
+                    if (SE.Player.GetCurrentCharacterName(true) == InsuranceManager.Instance.GetVehicleOwner(vehID))
                     {
                         int cost = (int)((Game.Player.Character.Position.DistanceTo(veh.Position) / 1000) * Config.BringVehicleBasePrice);
-                        UIMenuItem bringVehicle = new UIMenuItem(_insurance.GetVehicleFriendlyName(vehID, false), T.GetString("BringVehicleDesc"));
+                        UIMenuItem bringVehicle = new UIMenuItem(InsuranceManager.Instance.GetVehicleFriendlyName(vehID, false), T.GetString("BringVehicleDesc"));
                         bringVehicle.SetRightLabel(cost + "$");
                         _submenuBring.AddItem(bringVehicle);
 
@@ -581,7 +574,7 @@ namespace MMI_SP
                                 if (SE.Player.AddCashToPlayer(-1 * cost))
                                 {
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
-                                    _observer.BringVehicleToPlayer(veh, cost, Config.BringVehicleInstant);
+                                    InsuranceObserver.Instance.BringVehicleToPlayer(veh, cost, Config.BringVehicleInstant);
                                     bringVehicle.Enabled = false;
                                     UI.Notify(T.GetString("NotifyBringVehicle"));
 

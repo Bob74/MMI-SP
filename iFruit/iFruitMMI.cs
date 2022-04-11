@@ -22,25 +22,29 @@ namespace MMI_SP.iFruit
 
         void Initialize(object sender, EventArgs e)
         {
+            // Waiting for Insurance Observer to be ready
             while (!InsuranceObserver.Initialized)
+            {
                 Yield();
+            }
 
             _menuiFruit = new MenuMMI();
             _menuConfig = new MenuConfig();
 
             Wait(2000);
 
-            iFruitContact contactMMI = new iFruitContact("Mors Mutual Insurance");
-            contactMMI.Answered += ContactAnswered;
-            contactMMI.DialTimeout = 4000;
-            contactMMI.Active = true;
-            contactMMI.Icon = ContactIcon.MP_MorsMutual;
-            
-            iFruitContact contactConf = new iFruitContact(T.GetString("ConfigMenuContact"));
+            iFruitContact contactMMI = new iFruitContact("Mors Mutual Insurance")
+            {
+                DialTimeout = 4000, Active = true, Icon = ContactIcon.MP_MorsMutual
+            };
+            contactMMI.Answered += ContactAnsweredMMI;
+             
+            iFruitContact contactConf = new iFruitContact(T.GetString("ConfigMenuContact"))
+            {
+                DialTimeout = 0, Active = true, Icon = ContactIcon.MP_FmContact
+            };
             contactConf.Answered += ContactAnsweredConfig;
-            contactConf.DialTimeout = 0;
-            contactConf.Active = true;
-            contactConf.Icon = ContactIcon.MP_FmContact;
+
 
             _iFruit.Contacts.Add(contactMMI);
             _iFruit.Contacts.Add(contactConf);
@@ -63,7 +67,7 @@ namespace MMI_SP.iFruit
             }
             catch (Exception ex)
             {
-                Logger.Info(ex);
+                Logger.Exception(ex);
             }
 
             _iFruit.Update();
@@ -78,18 +82,24 @@ namespace MMI_SP.iFruit
             }
         }
 
+        internal void MenuClosed(object sender)
+        {
+            MMISound.Play(MMISound.SoundFamily.Bye);
+            _menuiFruit.Mainmenu.OnMenuClose -= MenuClosed;
+        }
 
-        internal void ContactAnswered(iFruitContact contact)
+
+        private void ContactAnsweredMMI(iFruitContact contact)
         {
             try
             {
                 _menuiFruit.Reset(true);
                 _menuiFruit.Show();
-                _menuiFruit.GetMainmenu().OnMenuClose += MenuClosed;
+                _menuiFruit.Mainmenu.OnMenuClose += MenuClosed;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logger.Info("Error: ContactAnswered - " + e.Message + "\r\n" + e.StackTrace);
+                Logger.Exception(ex);
                 UI.Notify("MMI-SP: Error with module NativeUI!");
             }
 
@@ -97,22 +107,16 @@ namespace MMI_SP.iFruit
             _iFruit.Close(2000);
         }
 
-        internal void MenuClosed(object sender)
-        {
-            MMISound.Play(MMISound.SoundFamily.Bye);
-            _menuiFruit.GetMainmenu().OnMenuClose -= MenuClosed;
-        }
 
-
-        internal void ContactAnsweredConfig(iFruitContact contact)
+        private void ContactAnsweredConfig(iFruitContact contact)
         {
             try
             {
                 _menuConfig.Show();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logger.Info("Error: ContactAnswered - " + e.Message);
+                Logger.Exception(ex);
                 UI.Notify("MMI-SP: Error with module NativeUI!");
             }
             _iFruit.Close();
