@@ -21,6 +21,8 @@ namespace MMI_SP
         {
             // Trick to be able to wait for the game
             Tick += Initialize;
+
+            if (IsDebug) Tick += DebugOnTick;
         }
 
         private void Initialize(object sender, EventArgs e)
@@ -50,7 +52,7 @@ namespace MMI_SP
 
 
             Logger.Debug("Checking prerequisites...");
-            if (SelfCheck.ArePrerequisitesInstalled())
+            if (SelfCheck.Check())
             {
                 Logger.Debug("Prerequisites are installed");
 
@@ -69,6 +71,17 @@ namespace MMI_SP
             _initialized = true;
 
             Tick -= Initialize;
+        }
+
+
+        void DebugOnTick(object sender, EventArgs e)
+        {
+            Ped character = Game.Player.Character;
+
+            if (character.CurrentVehicle != null)
+            {
+                SE.UI.DrawText(character.CurrentVehicle.IsPersistent.ToString());
+            }
         }
     }
 }
