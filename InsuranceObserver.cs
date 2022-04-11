@@ -35,9 +35,6 @@ namespace MMI_SP
         private static List<Vehicle> _recoveredVehList = new List<Vehicle>();
         public static List<Vehicle> RecoveredVehList { get => _recoveredVehList; set => _recoveredVehList = value; }
 
-        private static bool _persistentVehicles;
-        public static bool PersistentVehicles { get => _persistentVehicles; set => _persistentVehicles = value; }
-
         private static Dictionary<string, Blip> _blipsToRemove = new Dictionary<string, Blip>();
         public static Dictionary<string, Blip> BlipsToRemove { get => _blipsToRemove; set => _blipsToRemove = value; }
 
@@ -46,10 +43,6 @@ namespace MMI_SP
         internal List<IncomingVehicle> IncomingVehicles { get => _incomingVehicles; set => _incomingVehicles = value; }
 
         private Vehicle _previousVehicle = null;
-
-        // Bring vehicle
-        internal static int BringVehicleTimeout = 5;    // Time in minutes before the IncomingVehicle is canceled
-        internal static int BringVehicleRadius = 100;   // Define the radius around the player in which the driver spawn
 
         // Timers
         private int _timerInsurance = 0;
@@ -179,6 +172,34 @@ namespace MMI_SP
             }
         }
 
+
+        static string[] garages = new string[] {
+            "Michael - Beverly Hills",
+            "Trevor - Countryside", "Trevor - City", "Trevor - Stripclub",
+            "Franklin - Aunt", "Franklin - Hills",
+            "Lockup_PSY_01", "Lockup_PSY_02", "Lockup_PSY_03",
+            "Lockup_CSY_01", "Lockup_CSY_02", "Lockup_CSY_03",
+            "Lockup_CMS_01", "Lockup_CMS_02", "Lockup_CMS_03"
+        };
+        private bool IsVehicleInGarage(Vehicle veh)
+        {
+            bool isInGarage = false;
+
+            if (veh != null)
+            {
+                foreach (string garage in garages)
+                {
+                    isInGarage = Function.Call<bool>(Hash.IS_VEHICLE_IN_GARAGE_AREA, garage, veh);
+                    if (isInGarage)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return isInGarage;
+        }
+
         // Dispose Event
         protected override void Dispose(bool A_0)
         {
@@ -208,8 +229,7 @@ namespace MMI_SP
         /// <param name="veh"></param>
         internal static void RemoveRecoverBlip(Vehicle veh)
         {
-            Blip vehicleBlip = null;
-            BlipsToRemove.TryGetValue(Tools.GetVehicleIdentifier(veh), out vehicleBlip);
+            BlipsToRemove.TryGetValue(Tools.GetVehicleIdentifier(veh), out Blip vehicleBlip);
 
             if (vehicleBlip != null)
             {
@@ -224,7 +244,7 @@ namespace MMI_SP
         private void RemovePersistence()
         {
             for (int i = RecoveredVehList.Count - 1; i >= 0; i--)
-                if (!PersistentVehicles) RecoveredVehList.ElementAt(i).IsPersistent = false;
+                if (!Config.PersistentVehicles) RecoveredVehList.ElementAt(i).IsPersistent = false;
         }
 
         /// <summary>
@@ -280,10 +300,27 @@ namespace MMI_SP
                         // Only update the vehicle in DB if the player is inside
                         // (A vehicle shouldn't be modified without the player driving)
                         if (Game.Player.Character.CurrentVehicle == currenVeh)
+                        {
                             // Ensure we aren't in LSC or Benny's by checking if we use another camera
                             if (GameplayCamera.IsRendering)
                                 _im.UpdateVehicleToDB(currenVeh);
-                        if (PersistentVehicles) currenVeh.IsPersistent = true;
+                        }
+
+
+
+                        if (IsVehicleInGarage(currenVeh))
+                        {
+                            if (Config.PersistentVehicles) Function.Call(Hash.SET_ENTITY_AS_MISSION_ENTITY, currenVeh, false, true);
+                        }
+                        else
+                        {
+                            if (Config.PersistentVehicles) currenVeh.IsPersistent = true;
+                        }
+                        
+
+
+
+                        //if (PersistentVehicles) currenVeh.IsPersistent = true;
                     }
                 }
                 else
@@ -308,7 +345,7 @@ namespace MMI_SP
                             SE.UI.DrawNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("NotifyVehicleRecoveredTitle"), T.GetString("NotifyVehicleRecoveredSubtitle"));
 
                         // Remove persistence
-                        if (!PersistentVehicles) recoveredVehicle.IsPersistent = false;
+                        if (!Config.PersistentVehicles) recoveredVehicle.IsPersistent = false;
                     }
 
                     // Remove the vehicle from the list
@@ -389,7 +426,7 @@ namespace MMI_SP
                 }
 
                 // If the driver is not arrived after x minutes
-                if (Game.GameTime - incoming.calledTime > (BringVehicleTimeout * 60000))
+                if (Game.GameTime - incoming.calledTime > (Config.BringVehicleTimeout * 60000))
                 {
                     CannotBringVehicle(incoming);
                     break;
@@ -569,7 +606,7 @@ namespace MMI_SP
             if (!InsuredVehList.Contains(veh))
             {
                 InsuredVehList.Add(veh);
-                if (PersistentVehicles) veh.IsPersistent = true;
+                if (Config.PersistentVehicles) veh.IsPersistent = true;
             }
         }
         /// <summary>
@@ -584,7 +621,7 @@ namespace MMI_SP
                 if (Tools.GetVehicleIdentifier(veh) == vehID)
                 {
                     InsuredVehList.Remove(veh);
-                    if (PersistentVehicles) veh.IsPersistent = false;
+                    if (Config.PersistentVehicles) veh.IsPersistent = false;
                     break;
                 }
             } 
@@ -603,7 +640,7 @@ namespace MMI_SP
             if (!BlipsToRemove.ContainsValue(blip) && !BlipsToRemove.ContainsKey(Tools.GetVehicleIdentifier(veh)))
                 BlipsToRemove.Add(Tools.GetVehicleIdentifier(veh), blip);
 
-            if (PersistentVehicles) veh.IsPersistent = true;
+            if (Config.PersistentVehicles) veh.IsPersistent = true;
         }
 
 

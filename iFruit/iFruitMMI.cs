@@ -13,13 +13,6 @@ namespace MMI_SP.iFruit
         private MenuMMI _menuiFruit = null;
         private MenuConfig _menuConfig = null;
 
-        // Drawing restrictions for iFruit menu
-        public static bool CaniFruitInsure = false;
-        public static bool CaniFruitCancel = false;
-        public static bool CaniFruitRecover = true;
-        public static bool CaniFruitStolen = false;
-        public static bool CaniFruitPlate = false;
-
         public iFruitMMI()
         {
             _iFruit = new CustomiFruit();

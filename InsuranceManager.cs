@@ -22,23 +22,6 @@ namespace MMI_SP
         private static InsuranceManager _instance;
         public static InsuranceManager GetCurrentInstance() { return _instance; }
 
-        // Price multiplier
-        private static float _insuranceMult = 1.0f;
-        public static float InsuranceMult { get => _insuranceMult; set => _insuranceMult = value; }
-
-        private static float _recoverMult = 1.0f;
-        public static float RecoverMult { get => _recoverMult; set => _recoverMult = value; }
-
-        private static float _stolenMult = 1.0f;
-        public static float StolenMult { get => _stolenMult; set => _stolenMult = value; }
-
-        private static int _bringVehicleBasePrice = 200;
-        public static int BringVehicleBasePrice { get => _bringVehicleBasePrice; set => _bringVehicleBasePrice = value; }
-
-        private static bool _bringVehicleInstant = false;
-        public static bool BringVehicleInstant { get => _bringVehicleInstant; set => _bringVehicleInstant = value; }
-
-
         public enum Multiplier { Insurance, Recover, Stolen };
         public enum SpawnNode { Vehicle, Helicopter, Plane, Boat };
 
@@ -402,9 +385,9 @@ namespace MMI_SP
                         int cost = Int32.Parse(vehicleSection.Element("General").Element("Cost").Value);
                         float multiplier = 1.0f;
 
-                        if (mode == Multiplier.Insurance) multiplier = _insuranceMult;
-                        else if (mode == Multiplier.Recover) multiplier = _recoverMult;
-                        else if (mode == Multiplier.Stolen) multiplier = _stolenMult;
+                        if (mode == Multiplier.Insurance) multiplier = Config.InsuranceMult;
+                        else if (mode == Multiplier.Recover) multiplier = Config.RecoverMult;
+                        else if (mode == Multiplier.Stolen) multiplier = Config.StolenMult;
 
                         return (int)(cost * multiplier);
                     }
@@ -577,9 +560,9 @@ namespace MMI_SP
         public static int GetVehicleInsuranceCost(Vehicle veh, Multiplier mode = Multiplier.Insurance)
         {
             float multiplier = 1.0f;
-            if (mode == Multiplier.Insurance) multiplier = _insuranceMult;
-            else if (mode == Multiplier.Recover) multiplier = _recoverMult;
-            else if (mode == Multiplier.Stolen) multiplier = _stolenMult;
+            if (mode == Multiplier.Insurance) multiplier = Config.InsuranceMult;
+            else if (mode == Multiplier.Recover) multiplier = Config.RecoverMult;
+            else if (mode == Multiplier.Stolen) multiplier = Config.StolenMult;
 
             int price = 0;
             price += Price.GetVehicleModelPrice(veh);

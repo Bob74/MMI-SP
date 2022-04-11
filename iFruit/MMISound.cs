@@ -7,9 +7,7 @@ namespace MMI_SP.iFruit
 {
     static class MMISound
     {
-        private static int _volume = 25;
-        public static int Volume { get => _volume; set => _volume = value; }
-
+        
         private static Random _rnd = new Random();
         public enum SoundFamily { Hello, Okay, Bye, NoMoney };
 
@@ -63,14 +61,13 @@ namespace MMI_SP.iFruit
                 Stream stream = list[index];
                 stream.Position = 0;
 
-                WaveStream wvStream = new WaveStream(stream);
-                if (_volume < 0) _volume = 0;
-                if (_volume > 100) _volume = 100;
+                using (WaveStream wvStream = new WaveStream(stream))
+                {
+                    wvStream.Volume = Config.iFruitVolume;
 
-                wvStream.Volume = _volume;
-
-                SoundPlayer player = new SoundPlayer(wvStream);
-                player.Play();
+                    SoundPlayer player = new SoundPlayer(wvStream);
+                    player.Play();
+                }
             }
             catch (Exception e)
             {
