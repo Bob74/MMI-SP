@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.IO;
 
+using MMI_SP.Common;
+
 namespace MMI_SP
 {
     internal static class SelfCheck
@@ -94,14 +96,14 @@ namespace MMI_SP
 
                     if (installedVersion < dependency.Version)
                     {
-                        if (Config.ShowFileNotification) Tools.ShowNotification("CHAR_BLOCKED", "MMI-SP", dependency.FileName + " " + installedVersion + " is outdated!", "Download and install the latest version.");
+                        if (Config.ShowFileNotification) Utils.ShowNotification("CHAR_BLOCKED", "MMI-SP", dependency.FileName + " " + installedVersion + " is outdated!", "Download and install the latest version.");
                         Logger.Error(dependency.FileName + " " + installedVersion + " is outdated!");
                         installed = false;
                     }
                 }
                 else
                 {
-                    if (Config.ShowFileNotification) Tools.ShowNotification("CHAR_BLOCKED", "MMI-SP", dependency.FileName + " is missing!", "Download and install this file before starting the game.");
+                    if (Config.ShowFileNotification) Utils.ShowNotification("CHAR_BLOCKED", "MMI-SP", dependency.FileName + " is missing!", "Download and install this file before starting the game.");
                     Logger.Error(dependency.FullPath + " file is missing!");
                     installed = false;
                 }
@@ -119,7 +121,7 @@ namespace MMI_SP
             Logger.Debug("Checking Visual C++ version...");
             if (GetVisualCppVersion() < RequiredVisualCppVersion)
             {
-                if (Config.ShowVisualCNotification) Tools.ShowNotification("CHAR_BLOCKED", "MMI-SP", "Microsoft Visual C++ is missing!", "Download and install version 2015 or 2017 x64.");
+                if (Config.ShowVisualCNotification) Utils.ShowNotification("CHAR_BLOCKED", "MMI-SP", "Microsoft Visual C++ is missing!", "Download and install version 2015 or 2017 x64.");
                 Logger.Error("Microsoft Visual C++ 2015 and 2017 x64 is missing!");
                 installed = false;
             }
@@ -135,7 +137,7 @@ namespace MMI_SP
             Logger.Debug("Checking .NET version...");
             if (GetNETFrameworkVersion() < RequiredDotNetVersion)
             {
-                if (Config.ShowNETFrameworkNotification) Tools.ShowNotification("CHAR_BLOCKED", "MMI-SP", "Microsoft .NET Framework is outdated!", "Download and install version 4.8 or later.");
+                if (Config.ShowNETFrameworkNotification) Utils.ShowNotification("CHAR_BLOCKED", "MMI-SP", "Microsoft .NET Framework is outdated!", "Download and install version 4.8 or later.");
                 Logger.Error("Microsoft .NET Framework is outdated!");
                 installed = false;
             }

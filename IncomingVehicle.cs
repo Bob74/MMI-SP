@@ -8,6 +8,8 @@ using GTA;
 using GTA.Math;
 using GTA.Native;
 
+using MMI_SP.Common;
+
 namespace MMI_SP
 {
     class IncomingVehicle
@@ -112,7 +114,7 @@ namespace MMI_SP
             veh.Heading = nodeHeading;
             veh.PreviouslyOwnedByPlayer = true;
         }
-
+        
         public static IncomingVehicle BringVehicle(Vehicle veh, int cost, bool recoveredVehicle)
         {
             Vector3 startPosition = Game.Player.Character.Position;
@@ -120,13 +122,13 @@ namespace MMI_SP
                 startPosition = startPosition.Around(Config.BringVehicleRadius);
             } while (Game.Player.Character.Position.DistanceTo(startPosition) < (int)(Config.BringVehicleRadius * 0.8));
 
-            EntityPosition vehPos = Tools.GetVehicleSpawnLocation(startPosition);
+            EntityPosition vehPos = Utils.GetVehicleSpawnLocation(startPosition);
             veh.Position = vehPos.Position;
             veh.Heading = vehPos.Heading;
             veh.PreviouslyOwnedByPlayer = true;
             veh.EngineRunning = true;
 
-            Vector3 destination = Tools.GetVehicleSpawnLocation(Game.Player.Character.Position).Position;
+            Vector3 destination = Utils.GetVehicleSpawnLocation(Game.Player.Character.Position).Position;
 
             Ped driver = CreateDriver(veh);
             driver.Task.DriveTo(veh, destination, 0f, 10.0f, (int)DrivingStyle.IgnoreLights);

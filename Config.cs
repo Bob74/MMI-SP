@@ -139,7 +139,7 @@ namespace MMI_SP
 
             // General
             string languageFile = Settings.GetValue("General", "language", "default");
-            T.Initialize(BaseDir + "\\" + languageFile + ".xml");
+            T.Initialize($@"{BaseDir}\{languageFile}.xml");
             _persistentVehicles = Settings.GetValue("General", "PersistentInsuredVehicles", false);
 
 

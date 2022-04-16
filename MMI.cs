@@ -11,14 +11,18 @@ namespace MMI_SP
 {
     internal class MMI : Script
     {
-        public static bool IsDebug = true;
+        public static bool IsDebug = false;
         
         private static bool _initialized = false;
         public static bool IsInitialized { get => _initialized; }
 
 
         public MMI()
-        {
+        {            
+            #if DEBUG
+            IsDebug = true;
+            #endif
+
             // Trick to be able to wait for the game
             Tick += Initialize;
 

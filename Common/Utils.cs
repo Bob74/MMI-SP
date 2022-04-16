@@ -10,10 +10,10 @@ using GTA;
 using GTA.Native;
 using GTA.Math;
 
-namespace MMI_SP
+namespace MMI_SP.Common
 {
 
-    internal static class Tools
+    internal static class Utils
     {
 
         [MethodImpl(MethodImplOptions.NoInlining)]

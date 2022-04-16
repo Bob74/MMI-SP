@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+using MMI_SP.Common;
+
 namespace MMI_SP
 {
     using T = Translator;
@@ -126,19 +128,19 @@ namespace MMI_SP
                         }
                         else
                         {
-                            Tools.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
+                            Utils.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
                             textToDiplay = line;
                         }
                     }
                     // Displays the last line
                     if (textToDiplay != "" && textToDiplay != "\r" && textToDiplay != "\n" && textToDiplay != "\r\n")
                     {
-                        Tools.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
+                        Utils.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
                     }
                 }
                 else
                 {
-                    Tools.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), text);
+                    Utils.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), text);
                 }
             }
             catch (Exception e)

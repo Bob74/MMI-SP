@@ -1,6 +1,6 @@
 ﻿using GTA.Math;
 
-namespace MMI_SP
+namespace MMI_SP.Common
 {
     internal class EntityPosition
     {

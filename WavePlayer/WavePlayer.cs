@@ -11,6 +11,12 @@ using System.IO;
 
 class WaveStream : Stream
 {
+    private BinaryReader reader;
+    private byte[] header;
+    private int headerOffset = 0;
+    private int volume = MaxVolume;
+    private const int MaxVolume = 100;
+    
     public override bool CanSeek
     {
         // Seek is not supported
@@ -45,19 +51,21 @@ class WaveStream : Stream
         {
             CheckDisposed();
             if (value < 0 || MaxVolume < value)
-                throw new ArgumentOutOfRangeException("Volume",
-                                                      value,
-                                                      string.Format("Please specify a value in the range of 0 to {0}", MaxVolume));
+                throw new ArgumentOutOfRangeException("Volume", value, $"Please specify a value in the range of 0 to {MaxVolume}");
             volume = value;
         }
     }
     public WaveStream(Stream baseStream)
     {
         if (baseStream == null)
+        {
             throw new ArgumentNullException("baseStream");
+        }
         if (!baseStream.CanRead)
+        {
             throw new ArgumentException("Please specify a readable stream", "baseStream");
-        this.reader = new BinaryReader(baseStream);
+        }
+        reader = new BinaryReader(baseStream);
         ReadHeader();
     }
     public override void Close()
@@ -162,12 +170,6 @@ class WaveStream : Stream
     }
     private void CheckDisposed()
     {
-        if (IsClosed)
-            throw new ObjectDisposedException(GetType().FullName);
+        if (IsClosed) throw new ObjectDisposedException(GetType().FullName);
     }
-    private BinaryReader reader;
-    private byte[] header;
-    private int headerOffset = 0;
-    private int volume = MaxVolume;
-    private const int MaxVolume = 100;
 }

@@ -4,6 +4,7 @@ using NativeUI;
 using GTA;
 using GTA.Native;
 
+using MMI_SP.Common;
 using MMI_SP.iFruit;
 
 namespace MMI_SP
@@ -116,7 +117,7 @@ namespace MMI_SP
             {
                 int cost = InsuranceManager.GetVehicleInsuranceCost(veh);
 
-                if (!InsuranceManager.IsVehicleInsured(Tools.GetVehicleIdentifier(veh)))
+                if (!InsuranceManager.IsVehicleInsured(Utils.GetVehicleIdentifier(veh)))
                 {
                     if (InsuranceManager.IsVehicleInsurable(veh))
                     {
@@ -144,7 +145,7 @@ namespace MMI_SP
                         {
                             if (Game.Player.LastVehicle.Exists())
                             {
-                                if (!InsuranceManager.IsVehicleInsured(Tools.GetVehicleIdentifier(Game.Player.LastVehicle)))
+                                if (!InsuranceManager.IsVehicleInsured(Utils.GetVehicleIdentifier(Game.Player.LastVehicle)))
                                 {
                                     if (InsuranceManager.IsVehicleInsurable(Game.Player.LastVehicle))
                                     {
@@ -175,7 +176,7 @@ namespace MMI_SP
                 {
                     if (veh.Exists())
                     {
-                        if (!InsuranceManager.IsVehicleInsured(Tools.GetVehicleIdentifier(veh)))
+                        if (!InsuranceManager.IsVehicleInsured(Utils.GetVehicleIdentifier(veh)))
                         {
                             if (InsuranceManager.IsVehicleInsurable(veh))
                             {
@@ -391,7 +392,7 @@ namespace MMI_SP
                                 // Remove the vehicle from the world to avoid vehicle duplication
                                 foreach (Vehicle veh in World.GetAllVehicles())
                                 {
-                                    if (Tools.GetVehicleIdentifier(veh) == vehID)
+                                    if (Utils.GetVehicleIdentifier(veh) == vehID)
                                     {
                                         if (veh.CurrentBlip != null) veh.CurrentBlip.Remove();
                                         veh.Delete();
@@ -479,11 +480,11 @@ namespace MMI_SP
 
                                         // Refresh item text
                                         item.Text = InsuranceManager.Instance.GetVehicleFriendlyName(newVehID, false);
-
+                                        
                                         // Update in game vehicle
                                         for (int i = InsuranceObserver.InsuredVehList.Count - 1; i >= 0; i--)
                                         {
-                                            if (Tools.GetVehicleIdentifier(InsuranceObserver.InsuredVehList[i]) == vehID)
+                                            if (Utils.GetVehicleIdentifier(InsuranceObserver.InsuredVehList[i]) == vehID)
                                             {
                                                 // Update the plate on the in game's vehicles
                                                 InsuranceObserver.InsuredVehList[i].NumberPlate = newPlate;
@@ -558,7 +559,7 @@ namespace MMI_SP
             {
                 foreach (Vehicle veh in InsuranceObserver.GetBringableVehicles())
                 {
-                    string vehID = Tools.GetVehicleIdentifier(veh);
+                    string vehID = Utils.GetVehicleIdentifier(veh);
 
                     if (SE.Player.GetCurrentCharacterName(true) == InsuranceManager.Instance.GetVehicleOwner(vehID))
                     {

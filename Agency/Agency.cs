@@ -43,13 +43,17 @@ namespace MMI_SP.Agency
         void Initialize(object sender, EventArgs e)
         {
             while (!InsuranceObserver.Initialized)
+            {
                 Yield();
-
+            }
+            
             _agencyBlip = CreateBlip();
             CreateMenuMMI();
 
             if (Game.Player.Character.Position.DistanceTo(OfficePlayerPos) <= 2.0f)
+            {
                 ErrorCancelAgency(false);
+            }
 
             Tick -= Initialize;
             Tick += OnTick;
@@ -58,8 +62,7 @@ namespace MMI_SP.Agency
         // OnTick Event
         void OnTick(object sender, EventArgs e)
         {
-            if (_isPlayerInCutscene)
-                Function.Call(Hash.HIDE_HUD_AND_RADAR_THIS_FRAME);
+            if (_isPlayerInCutscene) Function.Call(Hash.HIDE_HUD_AND_RADAR_THIS_FRAME);
 
             if (_office != null)
             {
@@ -72,10 +75,11 @@ namespace MMI_SP.Agency
                 {
                     _timerRandomSpeech = Game.GameTime + new Random(Game.GameTime).Next(10000, 20000); // Next random speech in 5 to 10s
                 }
-                
             }
             else
+            {
                 _timerRandomSpeech = 0;
+            }
 
             if (_menuMMI != null) _menuMMI.MenuPoolProcessMenus();
             DisplayAgencyThisFrame();
@@ -91,8 +95,7 @@ namespace MMI_SP.Agency
                     _office.CleanUp();
                     _office = null;
                 }
-                if (_agencyBlip.Exists())
-                    _agencyBlip.Remove();
+                if (_agencyBlip.Exists()) _agencyBlip.Remove();
             }
         }
 
@@ -115,9 +118,9 @@ namespace MMI_SP.Agency
                             {
                                 EnterAgency();
                             }
-                            catch (Exception e)
+                            catch (Exception ex)
                             {
-                                Logger.Info("Error: DisplayAgencyThisFrame - " + e.Message);
+                                Logger.Exception(ex);
                                 UI.Notify("MMI-SP: Error while creating the office.");
 
                                 ErrorCancelAgency();
@@ -152,60 +155,58 @@ namespace MMI_SP.Agency
             _menuMMI.Mainmenu.OnMenuClose += (sender) =>
             {
                 if (_office.itemsCollection.Type == ItemsManager.CollectionType.Night)
+                {
                     _office.NpcSay(DialogueManager.SpeechType.OfficeNaughtyBye);
+                }
                 else
+                {
                     _office.NpcSay(DialogueManager.SpeechType.OfficeBye);
+                }
                 ExitAgency();
             };
         }
 
         private void EnterAgency()
         {
-#if DEBUG
-            Logger.Log("DEBUG: Reset the menu");
-#endif
+
+            Logger.Debug("Reset the menu");
+            
             try
             {
                 // Reset the menu
                 _menuMMI.Reset();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logger.Info("Error: EnterAgency - " + e.Message);
+                Logger.Exception(ex);
                 UI.Notify("MMI-SP: Error with module NativeUI!");
 
                 ErrorCancelAgency();
                 return;
             }
-#if DEBUG
-            Logger.Log("DEBUG: Entering cutscene");
-#endif
+
             // Entering cutscene
+            Logger.Debug("Entering cutscene");
             _isPlayerInCutscene = true;
-#if DEBUG
-            Logger.Log("Start entering cutscene and Fade screen out");
-#endif
+
             // Start entering cutscene and Fade screen out
+            Logger.Debug("Start entering cutscene and Fade screen out");
             Cutscenes.EnteringAgency();
-#if DEBUG
-            Logger.Log("Teleport the player in the office");
-#endif
+
             // Teleport the player in the office
+            Logger.Debug("Teleport the player in the office");
             Game.Player.Character.Position = OfficePlayerPos;
             Game.Player.Character.FreezePosition = true;
-#if DEBUG
-            Logger.Log("Force load office");
-#endif
+
             // Force load office
+            Logger.Debug("Force load office");
             Function.Call(Hash.LOAD_SCENE, OfficePlayerPos.X, OfficePlayerPos.Y, OfficePlayerPos.Z);
-#if DEBUG
-            Logger.Log("Wait until everything is loaded");
-#endif
+            Logger.Debug("Wait until everything is loaded");
+
             // Wait until everything is loaded
             SE.UI.WaitAndhideUI(1000);
-#if DEBUG
-            Logger.Log("Open menu");
-#endif
+            Logger.Debug("Open menu");
+
             try
             {
                 // Open menu
@@ -219,22 +220,19 @@ namespace MMI_SP.Agency
                 ErrorCancelAgency();
                 return;
             }
-#if DEBUG
-            Logger.Log("Office creation");
-#endif
+
+            Logger.Debug("Office creation");
+
             // Office creation
             if (_officeLastCreation.Days == World.CurrentDayTime.Days && _officeLastCreation.Hours == World.CurrentDayTime.Hours && _officeLastItemsCollection.Count > 0)
             {
-#if DEBUG
-                Logger.Log("Office creation with known items");
-#endif
+                Logger.Debug("Office creation with known items");
                 _office = new Office(_officeLastItemsCollection);
             }
             else
             {
-#if DEBUG
-                Logger.Log("Office creation with new items");
-#endif
+
+                Logger.Debug("Office creation with new items");
                 _office = new Office();
                 _officeLastCreation = World.CurrentDayTime;
                 if (_officeLastItemsCollection != null) _officeLastItemsCollection.DeleteItems();
@@ -244,11 +242,10 @@ namespace MMI_SP.Agency
                 _office.NpcSay(DialogueManager.SpeechType.OfficeNaughty);
             else
                 _office.NpcSay(DialogueManager.SpeechType.OfficeHi);
-#if DEBUG
-            Logger.Log("DEBUG: _office.itemsCollection:");
-            Logger.Log("DEBUG: type=" + _office.itemsCollection.Type.ToString());
-            Logger.Log("DEBUG: count=" + _office.itemsCollection.Count.ToString());
-#endif
+
+            Logger.Debug("_office.itemsCollection:");
+            Logger.Debug("type=" + _office.itemsCollection.Type.ToString());
+            Logger.Debug("count=" + _office.itemsCollection.Count.ToString());
         }
         private void ExitAgency()
         {

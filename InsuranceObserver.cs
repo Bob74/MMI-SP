@@ -7,6 +7,7 @@ using GTA;
 using GTA.Native;
 using GTA.Math;
 
+using MMI_SP.Common;
 using static MMI_SP.DialogueManager;
 
 namespace MMI_SP
@@ -58,30 +59,7 @@ namespace MMI_SP
             _instance = this;
 
             Tick += Initialize;
-#if DEBUG
-            KeyUp += OnKeyUp;
-#endif
         }
-
-#if DEBUG
-        void OnKeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case System.Windows.Forms.Keys.P:
-                    World.Weather = Weather.ExtraSunny;
-                    break;
-                case System.Windows.Forms.Keys.O:
-                    Vector3 pos = Game.Player.Character.Position;
-                    float h = Game.Player.Character.Heading;
-                    Logger.Log("new EntityPosition(new Vector3(" + pos.X + "f, " + pos.Y + "f, " + pos.Z + "f), " + h + "f),");
-                    break;
-                case System.Windows.Forms.Keys.Add:
-                    Game.Player.Character.Task.PlayAnimation("missdrfriedlanderdrf_idles", "hands2face_michael");
-                    break;
-            }
-        }
-#endif
 
         void Initialize(object sender, EventArgs e)
         {
@@ -101,6 +79,30 @@ namespace MMI_SP
             Tick -= Initialize;
             Tick += OnTick;
         }
+        
+#if DEBUG
+        public const float Width = 1280f;
+        public const float Height = 720f;
+        public static float AspectRatio => Function.Call<float>(Hash._0xF1307EF624A80D87, 0);
+        public static float ScaledWidth => Height * AspectRatio;
+        public static PointF WorldToScreen(Vector3 position, bool scaleWidth = false)
+        {
+            float pointX, pointY;
+
+            unsafe
+            {
+                if (!Function.Call<bool>(Hash._0x34E82F05DF2974F5, position.X, position.Y, position.Z, &pointX, &pointY))
+                {
+                    return PointF.Empty;
+                }
+            }
+
+            pointX *= scaleWidth ? ScaledWidth : Width;
+            pointY *= Height;
+
+            return new PointF(pointX, pointY);
+        }
+#endif
 
         // OnTick Event
         void OnTick(object sender, EventArgs e)
@@ -114,16 +116,12 @@ namespace MMI_SP
                 {
                     Vector3 pos = veh.Position;
                     pos.Z += 2.0f;
-                    Point screenCoo = UI.WorldToScreen(pos);
+                    
+                    PointF screenCoo = WorldToScreen(pos);
 
-                    SE.UI.DrawText(InsuranceManager.GetVehicleInsuranceCost(veh).ToString(), 0, true, (float)((float)screenCoo.X / (float)screenRes.Width), (float)((float)screenCoo.Y / (float)screenRes.Height), 1.0f, 64, 255, 64);
+                    SE.UI.DrawText(InsuranceManager.GetVehicleInsuranceCost(veh).ToString(), 0, true, (float)((float)screenCoo.X / screenRes.Width), (float)((float)screenCoo.Y / screenRes.Height), 1.0f, 64, 255, 64);
                 }
             }
-
-
-            
-            
-
 
             Vehicle curVehicle = Game.Player.LastVehicle;
             if (curVehicle != null) SE.UI.DrawText("X: " + curVehicle.Model.GetDimensions().X.ToString() + " / Y: " + curVehicle.Model.GetDimensions().Y.ToString());
@@ -167,9 +165,13 @@ namespace MMI_SP
                     if (InsuranceManager.IsVehicleInsurable(_previousVehicle))
                     {
                         if (InsuranceManager.IsVehicleInsured(_previousVehicle))
+                        {
                             SE.UI.DrawTexture(Config.InsuranceImage, 4500, 0.955f, 0.83f, Color.FromArgb(35, 199, 128));
+                        }
                         else
+                        {   
                             SE.UI.DrawTexture(Config.InsuranceImage, 4500, 0.955f, 0.83f, Color.FromArgb(190, 0, 50));
+                        }
                     }
                 }
             }
@@ -232,12 +234,12 @@ namespace MMI_SP
         /// <param name="veh"></param>
         internal static void RemoveRecoverBlip(Vehicle veh)
         {
-            BlipsToRemove.TryGetValue(Tools.GetVehicleIdentifier(veh), out Blip vehicleBlip);
+            BlipsToRemove.TryGetValue(Utils.GetVehicleIdentifier(veh), out Blip vehicleBlip);
 
             if (vehicleBlip != null)
             {
                 vehicleBlip.Remove();
-                BlipsToRemove.Remove(Tools.GetVehicleIdentifier(veh));
+                BlipsToRemove.Remove(Utils.GetVehicleIdentifier(veh));
             }
         }
 
@@ -265,7 +267,7 @@ namespace MMI_SP
                     if (!InsuredVehList.Contains(veh))
                     {
                         if (veh.NumberPlate == "46EEK572") veh.NumberPlate = SE.Vehicle.GetRandomNumberPlate();
-                        if (_im.IsVehicleInDB(Tools.GetVehicleIdentifier(veh)))
+                        if (_im.IsVehicleInDB(Utils.GetVehicleIdentifier(veh)))
                         {
                             InsuredVehList.Add(veh);
                             Raise_InsuredVehicleDetected(this, veh);
@@ -287,7 +289,7 @@ namespace MMI_SP
                 {
                     if (currenVeh.IsDead)
                     {
-                        string vehIdentifier = Tools.GetVehicleIdentifier(currenVeh);
+                        string vehIdentifier = Utils.GetVehicleIdentifier(currenVeh);
 
                         SE.UI.DrawNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("NotifyVehicleDestroyedTitle"), T.GetString("NotifyVehicleDestroyedSubtitle"));
 
@@ -473,7 +475,7 @@ namespace MMI_SP
                         IncomingVehicle.BringBoat(veh, cost, recoveredVehicle);
                     else
                     {
-                        EntityPosition pos = Tools.GetVehicleSpawnLocation(Game.Player.Character.Position);
+                        EntityPosition pos = Utils.GetVehicleSpawnLocation(Game.Player.Character.Position);
                         veh.Position = pos.Position;
                         veh.Heading = pos.Heading;
                     }
@@ -481,7 +483,7 @@ namespace MMI_SP
                     // If it isn't a recovered vehicle, it doesn't have a Blip yet
                     if (!recoveredVehicle)
                     {
-                        string key = Tools.GetVehicleIdentifier(veh);
+                        string key = Utils.GetVehicleIdentifier(veh);
                         if (BlipsToRemove.ContainsKey(key))
                         {
                             Blip oldBlip = BlipsToRemove[key];
@@ -507,7 +509,7 @@ namespace MMI_SP
                     // If it isn't a recovered vehicle, it doesn't have a Blip yet
                     if (!recoveredVehicle)
                     {
-                        string key = Tools.GetVehicleIdentifier(veh);
+                        string key = Utils.GetVehicleIdentifier(veh);
                         if (BlipsToRemove.ContainsKey(key))
                         {
                             Blip oldBlip = BlipsToRemove[key];
@@ -621,7 +623,7 @@ namespace MMI_SP
         {
             foreach (Vehicle veh in InsuredVehList)
             {
-                if (Tools.GetVehicleIdentifier(veh) == vehID)
+                if (Utils.GetVehicleIdentifier(veh) == vehID)
                 {
                     InsuredVehList.Remove(veh);
                     if (Config.PersistentVehicles) veh.IsPersistent = false;
@@ -640,8 +642,8 @@ namespace MMI_SP
         {
             if (!RecoveredVehList.Contains(veh))
                 RecoveredVehList.Add(veh);
-            if (!BlipsToRemove.ContainsValue(blip) && !BlipsToRemove.ContainsKey(Tools.GetVehicleIdentifier(veh)))
-                BlipsToRemove.Add(Tools.GetVehicleIdentifier(veh), blip);
+            if (!BlipsToRemove.ContainsValue(blip) && !BlipsToRemove.ContainsKey(Utils.GetVehicleIdentifier(veh)))
+                BlipsToRemove.Add(Utils.GetVehicleIdentifier(veh), blip);
 
             if (Config.PersistentVehicles) veh.IsPersistent = true;
         }

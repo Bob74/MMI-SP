@@ -9,6 +9,7 @@ using GTA;
 using GTA.Native;
 using GTA.Math;
 
+using MMI_SP.Common;
 
 namespace MMI_SP
 {
@@ -422,7 +423,7 @@ namespace MMI_SP
             // Remove the persistence of the vehicle and eventual Blip
             foreach (Vehicle veh in World.GetAllVehicles())
             {
-                if (Tools.GetVehicleIdentifier(veh) == vehIdentifier)
+                if (Utils.GetVehicleIdentifier(veh) == vehIdentifier)
                 {
                     if (veh.CurrentBlip != null) veh.CurrentBlip.Remove();
                     veh.IsPersistent = false;
@@ -451,7 +452,7 @@ namespace MMI_SP
                     Blip vehBlip = AddVehicleBlip(veh);
 
                     // Update DB status
-                    SetVehicleStatusToDB(Tools.GetVehicleIdentifier(veh), "Alive");
+                    SetVehicleStatusToDB(Utils.GetVehicleIdentifier(veh), "Alive");
 
                     Raise_VehicleHasBeenRecovered(this, veh, vehBlip);
                 }
@@ -487,7 +488,7 @@ namespace MMI_SP
         /// <returns></returns>
         internal bool IsVehicleInDB(Vehicle veh)
         {
-            return IsVehicleInDB(Tools.GetVehicleIdentifier(veh));
+            return IsVehicleInDB(Utils.GetVehicleIdentifier(veh));
         }
         internal bool IsVehicleInDB(string vehIdentifier)
         {
@@ -578,7 +579,7 @@ namespace MMI_SP
         /// <returns></returns>
         public static bool IsVehicleInsured(Vehicle veh)
         {
-            return IsVehicleInsured(Tools.GetVehicleIdentifier(veh));
+            return IsVehicleInsured(Utils.GetVehicleIdentifier(veh));
         }
         public static bool IsVehicleInsured(string vehIdentifier)
         {
@@ -718,7 +719,7 @@ namespace MMI_SP
         /// <param name="veh"></param>
         private XElement GenerateVehicleSection(Vehicle veh)
         {
-            string vehIdentifier = Tools.GetVehicleIdentifier(veh);
+            string vehIdentifier = Utils.GetVehicleIdentifier(veh);
 
             XElement vehSection = new XElement(vehIdentifier);
 
@@ -852,7 +853,7 @@ namespace MMI_SP
         /// <param name="veh"></param>
         public void UpdateVehicleToDB(Vehicle veh)
         {
-            string vehIdentifier = Tools.GetVehicleIdentifier(veh);
+            string vehIdentifier = Utils.GetVehicleIdentifier(veh);
 
             if (_dbFile.Element("Vehicles") != null)
             {

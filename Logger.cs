@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 
+using MMI_SP.Common;
+
 /// <summary>
 /// Static logger class that allows direct logging of anything to a text file
 /// </summary>
@@ -16,7 +18,7 @@ static class Logger
     {
         if (MMI_SP.MMI.IsDebug)
         {
-            Log("Debug - " + MMI_SP.Tools.GetCurrentMethod(1) + " " + message);
+            Log("Debug - " + Utils.GetCurrentMethod(1) + " " + message);
         }
     }
     public static void Info(object message)
@@ -29,7 +31,7 @@ static class Logger
     }
     public static void Error(object message)
     {
-        Log("Error - " + message);
+        Log("Error - " + Utils.GetCurrentMethod(1) + " " + message);
     }
     public static void Exception(Exception ex)
     {

@@ -22,16 +22,14 @@ namespace MMI_SP
 
         private static string _languageFilePath;
         private static XElement _languageFile;
-
         private static List<LocalizedString> _strings = new List<LocalizedString>();
 
-    
         public static void Initialize(string fileName)
         {
             _languageFilePath = fileName;
             if (!File.Exists(_languageFilePath))
             {
-                Logger.Info("Error: Language file does not exist! " + _languageFilePath + " (Check the language value in the config file and check if the file exist)");
+                Logger.Error("Language file does not exist! " + _languageFilePath + " (Check the language value in the config file and check if the file exist)");
                 SE.UI.DrawNotification("MMI-SP: ERROR - Language file does not exist! See \"GTA V\\MMI-SP.log\"");
             }
             else
@@ -45,9 +43,13 @@ namespace MMI_SP
         {
             LocalizedString result = _strings.Find(x => x.ID == ID);
             if (result != null)
+            { 
                 return ReplaceVariablesInString(result.value);
+            }
             else
+            {
                 return "UNKNOWN";
+            }
         }
 
         private static void GetAllStrings()
@@ -55,12 +57,20 @@ namespace MMI_SP
             if (_languageFile.Element("Strings") != null)
             {
                 foreach (XElement section in _languageFile.Element("Strings").Elements())
+                {
                     if (section != null)
+                    {
                         foreach (XElement str in section.Elements())
+                        {
                             _strings.Add(new LocalizedString(str.Name.LocalName, str.Value));
+                        }
+                    }
+                }
             }
             else
-                Logger.Info("Error: Translator.GetAllStrings - Incomplete language file (cannot find \"Strings\").");
+            {
+                Logger.Error("Incomplete language file (cannot find \"Strings\").");
+            }
         }
 
         private static string ReplaceVariablesInString(string str)

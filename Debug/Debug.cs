@@ -9,6 +9,8 @@ using GTA;
 using GTA.Native;
 using GTA.Math;
 
+using MMI_SP.Common;
+
 namespace MMI_SP
 {
     public static class Debug
@@ -80,7 +82,7 @@ namespace MMI_SP
                 y += 0.025f;
                 SE.UI.DrawText("GameplayCamera: " + GameplayCamera.IsRendering, 0, false, x, y, 0.4f, 255, 255, 255, 255);
                 y += 0.025f;
-                SE.UI.DrawText("Assuré: " + InsuranceManager.IsVehicleInsured(Tools.GetVehicleIdentifier(veh)).ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
+                SE.UI.DrawText("Assuré: " + InsuranceManager.IsVehicleInsured(Utils.GetVehicleIdentifier(veh)).ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
             }
         }
     }
