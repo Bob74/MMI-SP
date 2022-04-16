@@ -10,7 +10,7 @@ Don’t wait any longer and insure your vehicle now at Mors Mutual insurance!
 
 
 # Download
-Link is available here : https://www.gta5-mods.com/scripts/mors-mutual-insurance-single-player-mmi-sp
+Latest release is available here : https://www.gta5-mods.com/scripts/mors-mutual-insurance-single-player-mmi-sp
 
 
 # Installation note
