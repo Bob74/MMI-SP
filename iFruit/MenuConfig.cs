@@ -18,8 +18,8 @@ namespace MMI_SP.iFruit
 
         private static readonly Point _offset = SE.UI.GetScreenCoordinatesFromFloat(0.565f, 0.2f);
 
-        private MenuPool _menuPool;
-        UIMenu _mainMenu = new UIMenu(_menuTitle, T.GetString("ConfigMenuSubtitle"), _offset);
+        private readonly MenuPool _menuPool;
+        readonly UIMenu _mainMenu = new UIMenu(_menuTitle, T.GetString("ConfigMenuSubtitle"), _offset);
 
 
         internal void MenuPoolProcessMenus() { _menuPool.ProcessMenus(); }
@@ -65,10 +65,8 @@ namespace MMI_SP.iFruit
         internal void Show()
         {
             _mainMenu.Visible = true;
-            Function.Call(Hash._0xFC695459D4D0E219, 0.5f, 0.5f);    // Cursor position centered
+            Function.Call(Hash.SET_CURSOR_POSITION, 0.5f, 0.5f);    // Cursor position centered
         }
-
-
 
         private void AddMenuConfigLanguage(UIMenu menu, string key, string value, string description)
         {
@@ -76,7 +74,7 @@ namespace MMI_SP.iFruit
             int counter = 0;
             List<dynamic> languages = new List<dynamic>();
 
-            foreach (string file in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\MMI\\", "*.xml"))
+            foreach (string file in Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MMI", "*.xml")))
             {
                 FileInfo fileInfo = new FileInfo(file);
                 if (fileInfo.Name != "db.xml")

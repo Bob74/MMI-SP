@@ -8,10 +8,10 @@ namespace MMI_SP.iFruit
     static class MMISound
     {
         
-        private static Random _rnd = new Random();
+        private static readonly Random _rnd = new Random();
         public enum SoundFamily { Hello, Okay, Bye, NoMoney };
 
-        private static List<UnmanagedMemoryStream> _helloList = new List<UnmanagedMemoryStream> {
+        private static readonly List<UnmanagedMemoryStream> _helloList = new List<UnmanagedMemoryStream> {
             Properties.Resources.Start_HelloThisIsMMI,
             Properties.Resources.Start_MMIExpectUnexpected,
             Properties.Resources.Start_MMIHereToHelp,
@@ -22,7 +22,7 @@ namespace MMI_SP.iFruit
             Properties.Resources.Start_WhatCanIDo,
             Properties.Resources.Start_WhatCanIHelpYouWith};
 
-        private static List<UnmanagedMemoryStream> _byeList = new List<UnmanagedMemoryStream> {
+        private static readonly List<UnmanagedMemoryStream> _byeList = new List<UnmanagedMemoryStream> {
             Properties.Resources.End_ByeNow,
             Properties.Resources.End_DriveSafe,
             Properties.Resources.End_NiceDay,
@@ -30,7 +30,7 @@ namespace MMI_SP.iFruit
             Properties.Resources.End_SoLong,
             Properties.Resources.End_StaySafe};
 
-        private static List<UnmanagedMemoryStream> _okayList = new List<UnmanagedMemoryStream> {
+        private static readonly List<UnmanagedMemoryStream> _okayList = new List<UnmanagedMemoryStream> {
             Properties.Resources.Mid_ICanDoThat,
             Properties.Resources.Mid_ILookIntoit,
             Properties.Resources.Mid_IWillDoMyBest,
@@ -39,7 +39,7 @@ namespace MMI_SP.iFruit
             Properties.Resources.Mid_WeCanDoThat,
             Properties.Resources.Mid_WeCanHandleThat};
 
-        private static List<UnmanagedMemoryStream> _noMoneyList = new List<UnmanagedMemoryStream> { Properties.Resources.NoMoney };
+        private static readonly List<UnmanagedMemoryStream> _noMoneyList = new List<UnmanagedMemoryStream> { Properties.Resources.NoMoney };
 
 
         public static void Play(SoundFamily family)

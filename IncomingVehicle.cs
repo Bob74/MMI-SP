@@ -62,13 +62,13 @@ namespace MMI_SP
             veh.Position = startPosition;
             veh.Heading = (startPosition - Game.Player.Character.Position).ToHeading();
             veh.PreviouslyOwnedByPlayer = true;
-            veh.EngineRunning = true;
+            veh.IsEngineRunning = true;
             Function.Call(Hash.SET_HELI_BLADES_FULL_SPEED, veh);
 
-            Vector3 destination = Game.Player.Character.GetOffsetInWorldCoords(new Vector3(0f, 1.5f, -1f));
+            Vector3 destination = Game.Player.Character.GetOffsetPosition(new Vector3(0f, 1.5f, -1f));
 
             Ped driver = CreateDriver(veh);
-            Function.Call(Hash.TASK_HELI_MISSION, driver, veh, 0, Game.Player.Character, destination.X, destination.Y, destination.Z, 20, 30f, 15f, (destination - veh.Position).ToHeading(), -1, -1, -1, 32);
+            driver.Task.StartHeliMission(veh, destination, VehicleMissionType.LandAndWait, 30f, 15f, -1, -1, -1f, -1f, HeliMissionFlags.LandOnArrival);
 
             return new IncomingVehicle(veh, driver, destination, cost, recoveredVehicle);
         }
@@ -76,7 +76,7 @@ namespace MMI_SP
         public static IncomingVehicle BringPlane(Vehicle veh, int cost, bool recoveredVehicle)
         {
             float zOffset = 80f;
-            Vector3 startPosition = Game.Player.Character.GetOffsetInWorldCoords(new Vector3(0f, -5 * Config.BringVehicleRadius, 0f));
+            Vector3 startPosition = Game.Player.Character.GetOffsetPosition(new Vector3(0f, -5 * Config.BringVehicleRadius, 0f));
             if ((World.GetGroundHeight(startPosition) + zOffset) < Game.Player.Character.Position.Z)
                 startPosition.Z = Game.Player.Character.Position.Z + zOffset;
             else
@@ -85,20 +85,20 @@ namespace MMI_SP
             veh.Position = startPosition;
             veh.Heading = Game.Player.Character.Heading;
             veh.PreviouslyOwnedByPlayer = true;
-            veh.EngineRunning = true;
+            veh.IsEngineRunning = true;
+            Function.Call(Hash.SET_HELI_BLADES_FULL_SPEED, veh); // Works with planes
 
             veh.ApplyForceRelative(new Vector3(0f, 20f, 0f));
             
-            Vector3 runwayStartPoint = Game.Player.Character.GetOffsetInWorldCoords(new Vector3(0f, -110f, 0f));
-            Vector3 runwayEndPoint = Game.Player.Character.GetOffsetInWorldCoords(new Vector3(0f, -40.0f, 0f));
+            Vector3 runwayStartPoint = Game.Player.Character.GetOffsetPosition(new Vector3(0f, -110f, 0f));
+            Vector3 runwayEndPoint = Game.Player.Character.GetOffsetPosition(new Vector3(0f, -40.0f, 0f));
 
             Ped driver = CreateDriver(veh);
-            Function.Call(Hash.TASK_PLANE_LAND, driver, veh, runwayStartPoint.X, runwayStartPoint.Y, runwayStartPoint.Z, runwayEndPoint.X, runwayEndPoint.Y, runwayEndPoint.Z);
-
+            driver.Task.LandPlane(runwayStartPoint, runwayEndPoint, veh);
             return new IncomingVehicle(veh, driver, runwayEndPoint, cost, recoveredVehicle);
         }
 
-        public static void BringBoat(Vehicle veh, int cost, bool recoveredVehicle)
+        public static void BringBoat(Vehicle veh)
         {
             Vector3 coords = Game.Player.Character.Position;
             Vector3 nodePos;
@@ -126,12 +126,12 @@ namespace MMI_SP
             veh.Position = vehPos.Position;
             veh.Heading = vehPos.Heading;
             veh.PreviouslyOwnedByPlayer = true;
-            veh.EngineRunning = true;
+            veh.IsEngineRunning = true;
 
             Vector3 destination = Utils.GetVehicleSpawnLocation(Game.Player.Character.Position).Position;
 
             Ped driver = CreateDriver(veh);
-            driver.Task.DriveTo(veh, destination, 0f, 10.0f, (int)DrivingStyle.IgnoreLights);
+            driver.Task.DriveTo(veh, destination, 0f, 10.0f, DrivingStyle.IgnoreLights);
 
             return new IncomingVehicle(veh, driver, destination, cost, recoveredVehicle);
         }

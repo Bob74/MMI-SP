@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
 using GTA;
+using MMI_SP.Common;
 
 namespace MMI_SP
 {
@@ -12,17 +12,17 @@ namespace MMI_SP
         private class LocalizedString
         {
             public string ID { get; set; }
-            public string value { get; set; }
+            public string Value { get; set; }
             public LocalizedString(string id, string str)
             {
                 ID = id;
-                value = str;
+                Value = str;
             }
         }
 
         private static string _languageFilePath;
         private static XElement _languageFile;
-        private static List<LocalizedString> _strings = new List<LocalizedString>();
+        private static readonly List<LocalizedString> _strings = new List<LocalizedString>();
 
         public static void Initialize(string fileName)
         {
@@ -44,7 +44,7 @@ namespace MMI_SP
             LocalizedString result = _strings.Find(x => x.ID == ID);
             if (result != null)
             { 
-                return ReplaceVariablesInString(result.value);
+                return ReplaceVariablesInString(result.Value);
             }
             else
             {
@@ -84,9 +84,9 @@ namespace MMI_SP
             if (str.Contains("$VehicleStolenCost"))
                 str = str.Replace("$VehicleStolenCost", InsuranceManager.GetVehicleInsuranceCost(playerVehicle, InsuranceManager.Multiplier.Stolen).ToString());
             if (str.Contains("$VehicleFriendlyName"))
-                str = str.Replace("$VehicleFriendlyName", SE.Vehicle.GetVehicleFriendlyName(playerVehicle, false));
+                str = str.Replace("$VehicleFriendlyName", Utils.Vehicle.GetVehicleFriendlyName(playerVehicle, false));
             if (str.Contains("$VehicleFriendlyNameFull"))
-                str = str.Replace("$VehicleFriendlyNameFull", SE.Vehicle.GetVehicleFriendlyName(playerVehicle));
+                str = str.Replace("$VehicleFriendlyNameFull", Utils.Vehicle.GetVehicleFriendlyName(playerVehicle));
 
             if (str.Contains("$InsureVehicle"))
                 str = str.Replace("$InsureVehicle", GetString("InsureVehicle"));

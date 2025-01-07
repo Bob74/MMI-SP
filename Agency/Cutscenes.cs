@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using GTA;
+﻿using GTA;
 using GTA.Native;
 using GTA.Math;
+using MMI_SP.Common;
 
 
 namespace MMI_SP.Agency
@@ -42,16 +37,16 @@ namespace MMI_SP.Agency
             World.RenderingCamera = cam;
 
             // Wait until the character has walked to the doors
-            SE.UI.WaitAndhideUI(walkDuration - 1000);
+            Utils.Screen.WaitAndhideUI(walkDuration - 1000);
 
             // Hide the view
-            Game.FadeScreenOut(1000);
-            SE.UI.WaitAndhideUI(1000);
+            GTA.UI.Screen.FadeOut(1000);
+            Utils.Screen.WaitAndhideUI(1000);
 
             // Destroys the camera
             World.RenderingCamera = null;
             cam.IsActive = false;
-            cam.Destroy();
+            cam.Delete();
         }
         /// <summary>
         /// Cutscene of the player leaving the Agency.
@@ -69,7 +64,7 @@ namespace MMI_SP.Agency
             Function.Call(Hash.SIMULATE_PLAYER_INPUT_GAIT, Game.Player, 1.0f, walkDuration, 1.0f, 1, 0);
 
             // Show view
-            Game.FadeScreenIn(1000);
+            GTA.UI.Screen.FadeIn(1000);
         }
     }
 }

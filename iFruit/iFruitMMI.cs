@@ -9,7 +9,7 @@ namespace MMI_SP.iFruit
 
     class iFruitMMI : Script
     {
-        private CustomiFruit _iFruit;
+        private readonly CustomiFruit _iFruit;
         private MenuMMI _menuiFruit = null;
         private MenuConfig _menuConfig = null;
 
@@ -18,6 +18,7 @@ namespace MMI_SP.iFruit
             _iFruit = new CustomiFruit();
             
             Tick += Initialize;
+            Aborted += OnAborted;
         }
 
         void Initialize(object sender, EventArgs e)
@@ -58,8 +59,8 @@ namespace MMI_SP.iFruit
         {
             try
             {
-                if (_menuiFruit != null) _menuiFruit.MenuPoolProcessMenus();
-                if (_menuConfig != null) _menuConfig.MenuPoolProcessMenus();
+                _menuiFruit?.MenuPoolProcessMenus();
+                _menuConfig?.MenuPoolProcessMenus();
             }
             catch (DivideByZeroException)
             {
@@ -73,10 +74,10 @@ namespace MMI_SP.iFruit
             _iFruit.Update();
         }
 
-        // Dispose Event
-        protected override void Dispose(bool A_0)
+        // Aborted Event
+        void OnAborted(object sender, EventArgs e)
         {
-            if (A_0)
+            if (_iFruit?.Contacts.Count > 0)
             {
                 _iFruit.Contacts.ForEach(x => x.EndCall());
             }
@@ -100,7 +101,7 @@ namespace MMI_SP.iFruit
             catch (Exception ex)
             {
                 Logger.Exception(ex);
-                UI.Notify("MMI-SP: Error with module NativeUI!");
+                GTA.UI.Notification.Show("MMI-SP: Error with module NativeUI!");
             }
 
             MMISound.Play(MMISound.SoundFamily.Hello);
@@ -117,7 +118,7 @@ namespace MMI_SP.iFruit
             catch (Exception ex)
             {
                 Logger.Exception(ex);
-                UI.Notify("MMI-SP: Error with module NativeUI!");
+                GTA.UI.Notification.Show("MMI-SP: Error with module NativeUI!");
             }
             _iFruit.Close();
         }

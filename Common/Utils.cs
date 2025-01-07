@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.IO;
 using System.Diagnostics;
 using System.Text;
-using Microsoft.Win32;
 
 using GTA;
 using GTA.Native;
@@ -25,9 +22,9 @@ namespace MMI_SP.Common
             return $"{ clasName }.{ methodInfo.Name }";
         }
 
-        internal static void ShowVehicleInfo(Vehicle veh, float x = 0.825f, float y = 0.65f)
+        internal static void ShowVehicleInfo(GTA.Vehicle veh, float x = 0.825f, float y = 0.65f)
         {
-            Vehicle current = Game.Player.Character.CurrentVehicle;
+            GTA.Vehicle current = Game.Player.Character.CurrentVehicle;
             if (veh != null)
             {
                 SE.UI.DrawText("Last Vehicle", 0, false, x, y, 0.4f, 255, 255, 255, 255);
@@ -50,28 +47,9 @@ namespace MMI_SP.Common
                 SE.UI.DrawText("GameplayCamera: " + GameplayCamera.IsRendering, 0, false, x, y, 0.4f, 255, 255, 255, 255);
                 y += 0.025f;
                 SE.UI.DrawText("Insured: " + InsuranceManager.IsVehicleInsured(GetVehicleIdentifier(veh)).ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
+                y += 0.025f;
+                SE.UI.DrawText("Price: " + InsuranceManager.GetVehicleInsuranceCost(veh).ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
             }
-        }
-
-        /// <summary>
-        /// Allow notifications even if SHVDN-Extender is not installed (self check of initialization).
-        /// </summary>
-        /// <param name="picture"></param>
-        /// <param name="title"></param>
-        /// <param name="subtitle"></param>
-        /// <param name="message"></param>
-        internal static void ShowNotification(string picture, string title, string subtitle, string message)
-        {
-            Function.Call(Hash.REQUEST_STREAMED_TEXTURE_DICT, picture, false);
-            while (!Function.Call<bool>(Hash.HAS_STREAMED_TEXTURE_DICT_LOADED, picture))
-            {
-                Script.Yield();
-            }
-
-            Function.Call(Hash._SET_NOTIFICATION_TEXT_ENTRY, "STRING");
-            Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, message);
-            Function.Call(Hash._SET_NOTIFICATION_MESSAGE, picture, picture, false, 4, title, subtitle);
-            Function.Call(Hash._DRAW_NOTIFICATION, false, true);
         }
 
         internal static string ToHexString(string str)
@@ -103,9 +81,9 @@ namespace MMI_SP.Common
         /// </summary>
         /// <param name="veh"></param>
         /// <returns></returns>
-        internal static string GetVehicleIdentifier(Vehicle veh)
+        internal static string GetVehicleIdentifier(GTA.Vehicle veh)
         {
-            string vehIdentifier = SE.Player.GetCurrentCharacterName() + veh.Model.Hash.ToString() + veh.NumberPlate;
+            string vehIdentifier = SE.Player.GetCurrentCharacterName() + veh.Model.Hash.ToString() + veh.Mods.LicensePlate;
             vehIdentifier = vehIdentifier.Replace(" ", "_");
             return vehIdentifier;
         }
@@ -129,6 +107,148 @@ namespace MMI_SP.Common
             }
 
             return new EntityPosition(position, 0f);
+        }
+
+        internal static class Player
+        {
+            /// <summary>
+            /// Add cash to the current player. Use negative value to remove cash.
+            /// </summary>
+            /// <param name="value"></param>
+            /// <returns>Return false if the player doesn't have enought money.</returns>
+            internal static bool AddCashToPlayer(int value)
+            {
+                if (value == 0) return true;
+
+                int newValue = Game.Player.Money + value;
+
+                if (newValue >= 0)
+                {
+                    Game.Player.Money += value;
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        internal static class Vehicle
+        {
+            internal static float GetVehicleLength(GTA.Vehicle veh)
+            {
+                Vector3 pos1 = veh.Model.Dimensions.rearBottomLeft;
+                Vector3 pos2 = veh.Model.Dimensions.frontTopRight;
+                return Math.Abs(pos1.Y) + Math.Abs(pos2.Y);
+            }
+
+            /// <summary>
+            /// Check if the vehicle is the player "official" vehicle (the one with the colored blip).
+            /// </summary>
+            /// <param name="veh">Vehicle to check</param>
+            /// <returns>True if the vehicle is an official player vehicle</returns>
+            internal static bool IsPlayerOfficialVehicle(GTA.Vehicle veh)
+            {
+                // Michael
+                if ((VehicleHash)veh.Model.Hash == VehicleHash.Tailgater && veh.Mods.LicensePlate == "5MDS003 ")
+                    return true;
+
+                // Franklin
+                if (((VehicleHash)veh.Model.Hash == VehicleHash.Buffalo2 && veh.Mods.LicensePlate == " FC1988 ") ||
+                    ((VehicleHash)veh.Model.Hash == VehicleHash.Bagger && veh.Mods.LicensePlate == "  FC88  "))
+                    return true;
+
+                // Trevor
+                if ((VehicleHash)veh.Model.Hash == VehicleHash.Bodhi2 && veh.Mods.LicensePlate == "BETTY 32")
+                    return true;
+
+                return false;
+            }
+
+            /// <summary>
+            /// Generate a random number plate.
+            /// GTA V number plate format: 00AAA000
+            /// </summary>
+            /// <returns>Random plate number</returns>
+            internal static string GetRandomNumberPlate()
+            {
+                string final = "";
+
+                Random rnd = new Random();
+
+                int num = rnd.Next(0, 99);
+                final += num.ToString("00");
+                rnd = new Random(Game.GameTime);
+
+                final += (char)rnd.Next(65, 90);
+                final += (char)rnd.Next(65, 90);
+                final += (char)rnd.Next(65, 90);
+
+                num = rnd.Next(0, 999);
+                final += num.ToString("000");
+
+                return final;
+            }
+
+            /// <summary>
+            /// Returns a comprehensive name for the vehicle.
+            /// </summary>
+            /// <param name="veh">Vehicle</param>
+            /// <param name="showClassName">Set to true to show the class name</param>
+            /// <returns>[Model of the vehicle] - [Plate's number] ([Class name of the vehicle])</returns>
+            public static string GetVehicleFriendlyName(GTA.Vehicle veh, bool showClassName = true)
+            {
+                VehicleClass modelClass = GTA.Vehicle.GetModelClass(veh.Model.Hash);
+                string modelClassName = Game.GetLocalizedString(GTA.Vehicle.GetClassDisplayName(modelClass));
+                string modelName = Game.GetLocalizedString(GTA.Vehicle.GetModelDisplayName(veh.Model.Hash));
+
+                if (showClassName)
+                {
+                    return modelName + " - " + veh.Mods.LicensePlate + " (" + modelClassName + ")";
+                }
+                else
+                {
+                    return modelName + " - " + veh.Mods.LicensePlate;
+                }
+            }
+
+        }
+
+        internal static class Phone
+        {
+            /// <summary>
+            /// Return the name of the sound set of the current character's phone.
+            /// </summary>
+            /// <returns>Name of the sound set</returns>
+            internal static string GetPhoneSoundSet()
+            {
+                switch ((uint)Game.Player.Character.Model.Hash)
+                {
+                    case (uint)PedHash.Michael:
+                        return "Phone_SoundSet_Michael";
+                    case (uint)PedHash.Franklin:
+                        return "Phone_SoundSet_Franklin";
+                    case (uint)PedHash.Trevor:
+                        return "Phone_SoundSet_Trevor";
+                    default:
+                        return "Phone_SoundSet_Default";
+                }
+            }
+        }
+
+        internal static class Screen
+        {
+            /// <summary>
+            /// Wait the duration time and hide the ui.
+            /// </summary>
+            /// <param name="duration"></param>
+            internal static void WaitAndhideUI(int duration)
+            {
+                int timer = Game.GameTime + duration;
+                do
+                {
+                    Function.Call(Hash.HIDE_HUD_AND_RADAR_THIS_FRAME);
+                    Script.Yield();
+                } while (timer >= Game.GameTime);
+            }
         }
 
     }

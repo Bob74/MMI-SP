@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using GTA;
+using System.Collections.Generic;
 
 namespace MMI_SP
 {
@@ -13,15 +14,13 @@ namespace MMI_SP
         {
             internal string Name;
             internal string Voice;
-            internal string Param;
-            internal int Index;
+            internal SpeechModifier Modifier;
 
-            public Speech(string speechName, string voiceName, string speechParam, int i = 0)
+            public Speech(string speechName, string voiceName, SpeechModifier speechmodifier)
             {
                 Name = speechName;
                 Voice = voiceName;
-                Param = speechParam;
-                Index = i;
+                Modifier = speechmodifier;
             }
         }
 
@@ -44,6 +43,12 @@ namespace MMI_SP
                 case SpeechType.OfficeBye:
                     list.AddRange(OfficeByeCollection);
                     break;
+                case SpeechType.OfficeNaughty:
+                    list.AddRange(OfficeNaughtyCollection);
+                    break;
+                case SpeechType.OfficeNaughtyBye:
+                    list.AddRange(OfficeNaughtyByeCollection);
+                    break;
                 case SpeechType.DriverBye:
                     list.AddRange(DriverByeCollection);
                     break;
@@ -53,53 +58,53 @@ namespace MMI_SP
 
 
         // Office secretary
-        private static List<Speech> OfficeHiCollection = new List<Speech> {
-            new Speech("GENERIC_HI", "A_F_M_BEACH_01_WHITE_FULL_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_HI", "A_F_M_BEVHILLS_01_WHITE_MINI_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_HI", "A_F_M_BEVHILLS_01_WHITE_MINI_02", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_HI", "A_F_M_BEVHILLS_02_WHITE_FULL_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_HI", "A_F_M_BEVHILLS_02_WHITE_MINI_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_HI", "A_F_M_BUSINESS_02_WHITE_MINI_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BUSINESS_02_WHITE_MINI_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BEACH_01_WHITE_FULL_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BEVHILLS_01_WHITE_MINI_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BEVHILLS_02_WHITE_FULL_01", "SPEECH_PARAMS_FORCE"),
+        private static readonly List<Speech> OfficeHiCollection = new List<Speech> {
+            new Speech("GENERIC_HI", "A_F_M_BEACH_01_WHITE_FULL_01", SpeechModifier.Force),
+            new Speech("GENERIC_HI", "A_F_M_BEVHILLS_01_WHITE_MINI_01", SpeechModifier.Force),
+            new Speech("GENERIC_HI", "A_F_M_BEVHILLS_01_WHITE_MINI_02", SpeechModifier.Force),
+            new Speech("GENERIC_HI", "A_F_M_BEVHILLS_02_WHITE_FULL_01", SpeechModifier.Force),
+            new Speech("GENERIC_HI", "A_F_M_BEVHILLS_02_WHITE_MINI_01", SpeechModifier.Force),
+            new Speech("GENERIC_HI", "A_F_M_BUSINESS_02_WHITE_MINI_01", SpeechModifier.Force),
+            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BUSINESS_02_WHITE_MINI_01", SpeechModifier.Force),
+            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BEACH_01_WHITE_FULL_01", SpeechModifier.Force),
+            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BEVHILLS_01_WHITE_MINI_01", SpeechModifier.Force),
+            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BEVHILLS_02_WHITE_FULL_01", SpeechModifier.Force),
         };
-        private static List<Speech> OfficeNiceCarCollection = new List<Speech> {
-            new Speech("NICE_CAR", "A_F_M_BEACH_01_WHITE_FULL_01", "SPEECH_PARAMS_STANDARD"),
-            new Speech("NICE_CAR", "A_F_M_BEVHILLS_02_WHITE_FULL_01", "SPEECH_PARAMS_STANDARD"),
-            new Speech("NICE_CAR", "A_F_M_BEVHILLS_02_WHITE_FULL_02", "SPEECH_PARAMS_STANDARD"),
+        private static readonly List<Speech> OfficeNiceCarCollection = new List<Speech> {
+            new Speech("NICE_CAR", "A_F_M_BEACH_01_WHITE_FULL_01", SpeechModifier.Standard),
+            new Speech("NICE_CAR", "A_F_M_BEVHILLS_02_WHITE_FULL_01", SpeechModifier.Standard),
+            new Speech("NICE_CAR", "A_F_M_BEVHILLS_02_WHITE_FULL_02", SpeechModifier.Standard),
         };
-        private static List<Speech> OfficeSomethingCollection = new List<Speech> {
-            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BEVHILLS_01_WHITE_MINI_02", "SPEECH_PARAMS_STANDARD"),
-            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BEVHILLS_02_WHITE_MINI_01", "SPEECH_PARAMS_STANDARD"),
-            new Speech("PED_RANT_01", "A_F_M_BUSINESS_02_WHITE_MINI_01", "SPEECH_PARAMS_STANDARD"),
-            new Speech("CHALLENGE_ACCEPTED_GENERIC", "A_F_M_BEACH_01_WHITE_FULL_01", "SPEECH_PARAMS_STANDARD"),
-            new Speech("CHAT_RESP", "A_F_M_BEACH_01_WHITE_FULL_01", "SPEECH_PARAMS_STANDARD"),
-            new Speech("GENERIC_WHATEVER", "A_F_M_BEACH_01_WHITE_FULL_01", "SPEECH_PARAMS_STANDARD"),
+        private static readonly List<Speech> OfficeSomethingCollection = new List<Speech> {
+            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BEVHILLS_01_WHITE_MINI_02", SpeechModifier.Standard),
+            new Speech("GENERIC_HOWS_IT_GOING", "A_F_M_BEVHILLS_02_WHITE_MINI_01", SpeechModifier.Standard),
+            new Speech("PED_RANT_01", "A_F_M_BUSINESS_02_WHITE_MINI_01", SpeechModifier.Standard),
+            new Speech("CHALLENGE_ACCEPTED_GENERIC", "A_F_M_BEACH_01_WHITE_FULL_01", SpeechModifier.Standard),
+            new Speech("CHAT_RESP", "A_F_M_BEACH_01_WHITE_FULL_01", SpeechModifier.Standard),
+            new Speech("GENERIC_WHATEVER", "A_F_M_BEACH_01_WHITE_FULL_01", SpeechModifier.Standard),
 
-            new Speech("NICE_CAR", "A_F_M_BEACH_01_WHITE_FULL_01", "SPEECH_PARAMS_STANDARD"),
-            new Speech("NICE_CAR", "A_F_M_BEVHILLS_02_WHITE_FULL_01", "SPEECH_PARAMS_STANDARD"),
-            new Speech("NICE_CAR", "A_F_M_BEVHILLS_02_WHITE_FULL_02", "SPEECH_PARAMS_STANDARD"),
+            new Speech("NICE_CAR", "A_F_M_BEACH_01_WHITE_FULL_01", SpeechModifier.Standard),
+            new Speech("NICE_CAR", "A_F_M_BEVHILLS_02_WHITE_FULL_01", SpeechModifier.Standard),
+            new Speech("NICE_CAR", "A_F_M_BEVHILLS_02_WHITE_FULL_02", SpeechModifier.Standard),
         };
-        private static List<Speech> OfficeByeCollection = new List<Speech> {
-            new Speech("GENERIC_BYE", "A_F_M_BUSINESS_02_WHITE_MINI_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GOODBYE_ACROSS_STREET", "A_F_M_BUSINESS_02_WHITE_MINI_01", "SPEECH_PARAMS_FORCE"),
+        private static readonly List<Speech> OfficeByeCollection = new List<Speech> {
+            new Speech("GENERIC_BYE", "A_F_M_BUSINESS_02_WHITE_MINI_01", SpeechModifier.Force),
+            new Speech("GOODBYE_ACROSS_STREET", "A_F_M_BUSINESS_02_WHITE_MINI_01", SpeechModifier.Force),
         };
 
-        private static List<Speech> OfficeNaughtyCollection = new List<Speech> {
-            new Speech("CHALLENGE_THREATEN", "A_F_M_BEACH_01_WHITE_FULL_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_HI", "S_F_Y_HOOKER_01_WHITE_FULL_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("HOOKER_OFFER_SERVICE", "S_F_Y_HOOKER_01_WHITE_FULL_01", "SPEECH_PARAMS_FORCE"),
+        private static readonly List<Speech> OfficeNaughtyCollection = new List<Speech> {
+            new Speech("CHALLENGE_THREATEN", "A_F_M_BEACH_01_WHITE_FULL_01", SpeechModifier.Force),
+            new Speech("GENERIC_HI", "S_F_Y_HOOKER_01_WHITE_FULL_01", SpeechModifier.Force),
+            new Speech("HOOKER_OFFER_SERVICE", "S_F_Y_HOOKER_01_WHITE_FULL_01", SpeechModifier.Force),
         };
-        private static List<Speech> OfficeNaughtyByeCollection = new List<Speech> {
-            new Speech("SEX_FINISHED", "S_F_Y_HOOKER_01_WHITE_FULL_01", "SPEECH_PARAMS_FORCE"),
+        private static readonly List<Speech> OfficeNaughtyByeCollection = new List<Speech> {
+            new Speech("SEX_FINISHED", "S_F_Y_HOOKER_01_WHITE_FULL_01", SpeechModifier.Force),
         };
 
         // Driver
-        private static List<Speech> DriverByeCollection = new List<Speech> {
-            new Speech("GENERIC_BYE", "S_M_M_AUTOSHOP_01_WHITE_01", "SPEECH_PARAMS_FORCE"),
-            new Speech("GENERIC_BYE", "S_M_M_GENERICMECHANIC_01_BLACK_MINI_01", "SPEECH_PARAMS_FORCE"),
+        private static readonly List<Speech> DriverByeCollection = new List<Speech> {
+            new Speech("GENERIC_BYE", "S_M_M_AUTOSHOP_01_WHITE_01", SpeechModifier.Force),
+            new Speech("GENERIC_BYE", "S_M_M_GENERICMECHANIC_01_BLACK_MINI_01", SpeechModifier.Force),
         };
     }
 }

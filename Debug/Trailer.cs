@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using GTA;
+﻿using GTA;
 using GTA.Native;
 using GTA.Math;
-
 
 namespace MMI_SP
 {
@@ -78,8 +71,8 @@ namespace MMI_SP
         private static void SetupFranklin()
         {
             Vehicle buffalo = World.CreateVehicle(VehicleHash.Buffalo2, _franklinCarPosition, _franklinCarHeading);
-            buffalo.PrimaryColor = VehicleColor.PureWhite;
-            buffalo.WindowTint = VehicleWindowTint.Limo;
+            buffalo.Mods.PrimaryColor = VehicleColor.PureWhite;
+            buffalo.Mods.WindowTint = VehicleWindowTint.Limo;
             buffalo.DirtLevel = 0f;
             buffalo.MarkAsNoLongerNeeded();
         }
@@ -111,22 +104,27 @@ namespace MMI_SP
             {
                 case PedHash.Michael:
                     if (_michael != null)
-                        Function.Call(Hash._PLAY_AMBIENT_SPEECH_WITH_VOICE, _michael, insult, "MICHAEL_NORMAL", "SPEECH_PARAMS_FORCE", 0);
+                    {
+                        _michael.PlayAmbientSpeech(insult, "MICHAEL_NORMAL", SpeechModifier.Force);
+                    }
                     break;
                 case PedHash.Franklin:
                     if (_franklin != null)
-                        Function.Call(Hash._PLAY_AMBIENT_SPEECH_WITH_VOICE, _franklin, insult, "FRANKLIN_NORMAL", "SPEECH_PARAMS_FORCE", 0);
+                    {
+                        _franklin.PlayAmbientSpeech(insult, "FRANKLIN_NORMAL", SpeechModifier.Force);
+                    }
                     break;
                 case PedHash.Trevor:
                     if (_trevor != null)
-                        Function.Call(Hash._PLAY_AMBIENT_SPEECH_WITH_VOICE, _trevor, insult, "TREVOR_NORMAL", "SPEECH_PARAMS_FORCE", 3);
+                    {
+                        _trevor.PlayAmbientSpeech(insult, "TREVOR_NORMAL", SpeechModifier.Force);
+                    }
                     break;
                 case PedHash.FreemodeMale01:
                     if (_freemode != null)
                     {
                         _freemode.Task.PlayAnimation("mp_celebration@idles@male", "celebration_idle_m_b");
                     }
-
                     break;
             }
         }
@@ -134,7 +132,9 @@ namespace MMI_SP
         internal static void TrevorFight()
         {
             if (_freemode != null)
+            {
                 _trevor.Task.FightAgainst(_freemode);
+            }
         }
 
     }

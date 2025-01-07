@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -110,8 +108,6 @@ namespace MMI_SP
 
             try
             {
-                WebClient client = new WebClient();
-                
                 if (text.Length > 90)
                 {
                     string[] textlines = text.Split('\n');
@@ -128,19 +124,19 @@ namespace MMI_SP
                         }
                         else
                         {
-                            Utils.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
+                            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.MpMorsMutual, "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
                             textToDiplay = line;
                         }
                     }
                     // Displays the last line
                     if (textToDiplay != "" && textToDiplay != "\r" && textToDiplay != "\n" && textToDiplay != "\r\n")
                     {
-                        Utils.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
+                        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.MpMorsMutual, "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), textToDiplay);
                     }
                 }
                 else
                 {
-                    Utils.ShowNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), text);
+                    GTA.UI.Notification.Show(GTA.UI.NotificationIcon.MpMorsMutual, "MORS MUTUAL INSURANCE", T.GetString("UpdateAvailable"), text);
                 }
             }
             catch (Exception e)

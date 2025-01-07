@@ -3,6 +3,7 @@
 using GTA;
 using GTA.Native;
 using GTA.Math;
+using MMI_SP.Common;
 
 namespace MMI_SP.Agency
 {
@@ -56,6 +57,7 @@ namespace MMI_SP.Agency
             }
 
             Tick -= Initialize;
+            Aborted += OnAborted;
             Tick += OnTick;
         }
 
@@ -81,22 +83,18 @@ namespace MMI_SP.Agency
                 _timerRandomSpeech = 0;
             }
 
-            if (_menuMMI != null) _menuMMI.MenuPoolProcessMenus();
+            _menuMMI?.MenuPoolProcessMenus();
             DisplayAgencyThisFrame();
         }
 
-        // Dispose Event
-        protected override void Dispose(bool A_0)
+        private void OnAborted(object sender, EventArgs e)
         {
-            if (A_0)
+            if (_office != null)
             {
-                if (_office != null)
-                {
-                    _office.CleanUp();
-                    _office = null;
-                }
-                if (_agencyBlip.Exists()) _agencyBlip.Remove();
+                _office.CleanUp();
+                _office = null;
             }
+            if (_agencyBlip.Exists()) _agencyBlip.Delete();
         }
 
         /// <summary>
@@ -108,11 +106,13 @@ namespace MMI_SP.Agency
             {
                 if (!Game.Player.Character.IsInVehicle())
                     if (Game.Player.WantedLevel > 0)
-                        SE.UI.DisplayHelpTextThisFrame(T.GetString("AgencyEntryWanted"));
+                    {
+                        GTA.UI.Screen.ShowHelpTextThisFrame(T.GetString("AgencyEntryWanted"));
+                    }
                     else
                     {
-                        SE.UI.DisplayHelpTextThisFrame(T.GetString("AgencyEntry"));
-                        if (Game.IsControlJustReleased(1, Control.Context))
+                        GTA.UI.Screen.ShowHelpTextThisFrame(T.GetString("AgencyEntry"));
+                        if (Game.IsControlJustReleased(Control.Context))
                         {
                             try
                             {
@@ -121,7 +121,7 @@ namespace MMI_SP.Agency
                             catch (Exception ex)
                             {
                                 Logger.Exception(ex);
-                                UI.Notify("MMI-SP: Error while creating the office.");
+                                GTA.UI.Notification.Show("MMI-SP: Error while creating the office.");
 
                                 ErrorCancelAgency();
 
@@ -179,7 +179,7 @@ namespace MMI_SP.Agency
             catch (Exception ex)
             {
                 Logger.Exception(ex);
-                UI.Notify("MMI-SP: Error with module NativeUI!");
+                GTA.UI.Notification.Show("MMI-SP: Error with module NativeUI!");
 
                 ErrorCancelAgency();
                 return;
@@ -196,7 +196,7 @@ namespace MMI_SP.Agency
             // Teleport the player in the office
             Logger.Debug("Teleport the player in the office");
             Game.Player.Character.Position = OfficePlayerPos;
-            Game.Player.Character.FreezePosition = true;
+            Game.Player.Character.IsPositionFrozen = true;
 
             // Force load office
             Logger.Debug("Force load office");
@@ -204,7 +204,7 @@ namespace MMI_SP.Agency
             Logger.Debug("Wait until everything is loaded");
 
             // Wait until everything is loaded
-            SE.UI.WaitAndhideUI(1000);
+            Utils.Screen.WaitAndhideUI(1000);
             Logger.Debug("Open menu");
 
             try
@@ -214,8 +214,8 @@ namespace MMI_SP.Agency
             }
             catch (Exception e)
             {
-                Logger.Info("Error: EnterAgency - " + e.Message);
-                UI.Notify("MMI-SP: Error with module NativeUI!");
+                Logger.Error("Error: EnterAgency - " + e.Message);
+                GTA.UI.Notification.Show("MMI-SP: Error with module NativeUI!");
 
                 ErrorCancelAgency();
                 return;
@@ -224,7 +224,7 @@ namespace MMI_SP.Agency
             Logger.Debug("Office creation");
 
             // Office creation
-            if (_officeLastCreation.Days == World.CurrentDayTime.Days && _officeLastCreation.Hours == World.CurrentDayTime.Hours && _officeLastItemsCollection.Count > 0)
+            if (_officeLastCreation.Days == World.CurrentTimeOfDay.Days && _officeLastCreation.Hours == World.CurrentTimeOfDay.Hours && _officeLastItemsCollection.Count > 0)
             {
                 Logger.Debug("Office creation with known items");
                 _office = new Office(_officeLastItemsCollection);
@@ -234,8 +234,8 @@ namespace MMI_SP.Agency
 
                 Logger.Debug("Office creation with new items");
                 _office = new Office();
-                _officeLastCreation = World.CurrentDayTime;
-                if (_officeLastItemsCollection != null) _officeLastItemsCollection.DeleteItems();
+                _officeLastCreation = World.CurrentTimeOfDay;
+                _officeLastItemsCollection?.DeleteItems();
                 _officeLastItemsCollection = new ItemsManager.OfficeItemsCollection(_office.itemsCollection);
             }
             if (_office.itemsCollection.Type == ItemsManager.CollectionType.Night)
@@ -249,15 +249,15 @@ namespace MMI_SP.Agency
         }
         private void ExitAgency()
         {
-            Game.FadeScreenOut(1000);
-            SE.UI.WaitAndhideUI(1000);
+            GTA.UI.Screen.FadeOut(1000);
+            Utils.Screen.WaitAndhideUI(1000);
 
             // Removing office
             _office.CleanUp();
             _office = null;
 
             // Teleport the player to the entrance
-            Game.Player.Character.FreezePosition = false;
+            Game.Player.Character.IsPositionFrozen = false;
             Game.Player.Character.Position = _position;
             
             // Force load spawn point
@@ -274,8 +274,8 @@ namespace MMI_SP.Agency
         {
             _isPlayerInCutscene = false;
             Game.Player.Character.Position = _position;
-            Game.Player.Character.FreezePosition = false;
-            Game.FadeScreenIn(1000);
+            Game.Player.Character.IsPositionFrozen = false;
+            GTA.UI.Screen.FadeIn(1000);
 
             World.RenderingCamera = null;
 

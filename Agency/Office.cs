@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 using static MMI_SP.Agency.ItemsManager;
 using static MMI_SP.DialogueManager;
+using MMI_SP.Common;
 
 namespace MMI_SP.Agency
 {
@@ -19,7 +20,7 @@ namespace MMI_SP.Agency
 
         private Vector3 npcPos = new Vector3(114.35f, -619.3748f, 204.50f);
         private Vector3 npcRot = new Vector3(0.0f, 0.0f, -120.0f);
-        private string npcModel = "a_f_y_business_01";
+        private readonly string npcModel = "a_f_y_business_01";
         private Ped npc;
 
         private Weather officeWeather;
@@ -38,7 +39,7 @@ namespace MMI_SP.Agency
         }
         private void BuildOffice()
         {
-            // Store current weather and change to a non-raining weather (rain drops pass through the roof)
+            // Store current weather and change to a non-raining weather (raindrops goes through the roof)
             officeWeather = World.Weather;
             World.Weather = Weather.Clouds;
 
@@ -62,10 +63,10 @@ namespace MMI_SP.Agency
                             if (npc.Exists()) npc.SetNoCollision(prop, true);
                     }
                     else
-                        Logger.Info("Error: BuildOffice Props - prop is null!");
+                        Logger.Error("Error: BuildOffice Props - prop is null!");
                 }
                 else
-                    Logger.Info("Error: BuildOffice Props - npc is null!");
+                    Logger.Error("Error: BuildOffice Props - npc is null!");
             }
                 
 
@@ -73,25 +74,25 @@ namespace MMI_SP.Agency
             if (npc != null)
             {
                 if (npc.Exists())
-                    officeCamera.PointAt(npc, (int)Bone.IK_Head);
+                    officeCamera.PointAt(npc.Bones[Bone.IKHead]);
             }
             else
             {
                 officeCamera.PointAt(npcPos);
-                Logger.Info("Error: BuildOffice Camera - npc is null!");
+                Logger.Error("Error: BuildOffice Camera - npc is null!");
             }
 
             World.RenderingCamera = officeCamera;
 
             // Show view
-            Game.FadeScreenIn(1000);
-            SE.UI.WaitAndhideUI(1000);
+            GTA.UI.Screen.FadeIn(1000);
+            Utils.Screen.WaitAndhideUI(1000);
         }
         internal void CleanUp()
         {
             World.RenderingCamera = null;
             officeCamera.IsActive = false;
-            officeCamera.Destroy();
+            officeCamera.Delete();
 
             World.Weather = officeWeather;
             if (npc != null)
@@ -103,7 +104,7 @@ namespace MMI_SP.Agency
                 }
             }
             else
-                Logger.Info("Error: CleanUp - npc is null!");
+                Logger.Error("Error: CleanUp - npc is null!");
 
             itemsCollection.DeleteItems();
         }
@@ -117,24 +118,28 @@ namespace MMI_SP.Agency
             Random rnd = new Random(Game.GameTime);
             List<OfficeItemsCollection> itemsCollectionPool = new List<OfficeItemsCollection>();
             OfficeItemsCollection collec;
-            do
+
+            if (World.CurrentTimeOfDay.Hours >= 2 && World.CurrentTimeOfDay.Hours < 12)
             {
-                if (World.CurrentDayTime.Hours >= 2 && World.CurrentDayTime.Hours < 12)
-                    itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Normal));
-                else if (World.CurrentDayTime.Hours >= 12 && World.CurrentDayTime.Hours < 14)
-                {
-                    itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Midday));
-                    itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Normal));
-                }
-                else if (World.CurrentDayTime.Hours >= 14 && World.CurrentDayTime.Hours < 0)
-                    itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Normal));
-                else
-                {
-                    itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Normal));
-                    itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Night));
-                }
-                collec = itemsCollectionPool[rnd.Next(0, itemsCollectionPool.Count - 1)];
-            } while (collec.Type == CollectionType.Empty);
+                itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Normal));
+            }
+            else if (World.CurrentTimeOfDay.Hours >= 12 && World.CurrentTimeOfDay.Hours < 14)
+            {
+                itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Midday));
+                itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Normal));
+            }
+            else if (World.CurrentTimeOfDay.Hours >= 14 && World.CurrentTimeOfDay.Hours < 0)
+            {
+                itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Normal));
+            }
+            else
+            {
+                itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Normal));
+                itemsCollectionPool.AddRange(ItemsManager.GetItemsCollection(CollectionType.Night));
+            }
+
+            // if multiple collections are available, choose one randomly
+            collec = itemsCollectionPool[rnd.Next(0, itemsCollectionPool.Count)];
 
             return collec;
         }
@@ -158,7 +163,7 @@ namespace MMI_SP.Agency
                 }
             }
             else
-                Logger.Info("Error: CreateNpc - npc is null!");
+                Logger.Error("Error: CreateNpc - npc is null!");
 
             return npc;
         }
@@ -172,7 +177,7 @@ namespace MMI_SP.Agency
                     npc.Task.PlayAnimation("amb@prop_human_seat_chair@female@arms_folded@base", "base", 1.0f, -1, AnimationFlags.Loop);
 
                     // Freeze position
-                    npc.FreezePosition = true;
+                    npc.IsPositionFrozen = true;
 
                     npc.Position = npcPos;
                     npc.Rotation = npcRot;
@@ -181,10 +186,10 @@ namespace MMI_SP.Agency
                     npc.Task.LookAt(officeCameraPos);
                 }
                 else
-                    Logger.Info("Error: SetNpcAI - npc doesn't exist!");
+                    Logger.Error("Error: SetNpcAI - npc doesn't exist!");
             }
             else
-                Logger.Info("Error: SetNpcAI - npc is null!");
+                Logger.Error("Error: SetNpcAI - npc is null!");
 
         }
         internal void NpcSay(SpeechType type)
@@ -194,7 +199,7 @@ namespace MMI_SP.Agency
             
             int i = rnd.Next(0, speeches.Count - 1);
             Speech speech = speeches[i];
-            Function.Call(Hash._PLAY_AMBIENT_SPEECH_WITH_VOICE, npc, speech.Name, speech.Voice, speech.Param, speech.Index);
+            npc.PlayAmbientSpeech(speech.Name, speech.Voice, speech.Modifier);
         }
 
     }

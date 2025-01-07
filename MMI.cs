@@ -34,16 +34,15 @@ namespace MMI_SP
             // Reset log file
             Logger.ResetLogFile();
             
-            Logger.Debug($"Waiting for game to be loaded...");
+            Logger.Debug("Waiting for game to be loaded...");
             while (Game.IsLoading)
             {
                 Yield();
             }
             Logger.Debug("Game is loaded");
 
-
             Logger.Debug("Waiting for screen to fade...");
-            while (Game.IsScreenFadingIn)
+            while (GTA.UI.Screen.IsFadingIn)
             {
                 Yield();
             }

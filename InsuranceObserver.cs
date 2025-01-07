@@ -77,55 +77,13 @@ namespace MMI_SP
             _initialized = true;
 
             Tick -= Initialize;
+            Aborted += OnAborted;
             Tick += OnTick;
         }
-        
-#if DEBUG
-        public const float Width = 1280f;
-        public const float Height = 720f;
-        public static float AspectRatio => Function.Call<float>(Hash._0xF1307EF624A80D87, 0);
-        public static float ScaledWidth => Height * AspectRatio;
-        public static PointF WorldToScreen(Vector3 position, bool scaleWidth = false)
-        {
-            float pointX, pointY;
-
-            unsafe
-            {
-                if (!Function.Call<bool>(Hash._0x34E82F05DF2974F5, position.X, position.Y, position.Z, &pointX, &pointY))
-                {
-                    return PointF.Empty;
-                }
-            }
-
-            pointX *= scaleWidth ? ScaledWidth : Width;
-            pointY *= Height;
-
-            return new PointF(pointX, pointY);
-        }
-#endif
 
         // OnTick Event
         void OnTick(object sender, EventArgs e)
         {
-#if DEBUG
-            Size screenRes = SE.UI.GetScreenResolution();
-
-            foreach (Vehicle veh in World.GetAllVehicles())
-            {
-                if (Game.Player.Character.Position.DistanceTo(veh.Position) < 30f)
-                {
-                    Vector3 pos = veh.Position;
-                    pos.Z += 2.0f;
-                    
-                    PointF screenCoo = WorldToScreen(pos);
-
-                    SE.UI.DrawText(InsuranceManager.GetVehicleInsuranceCost(veh).ToString(), 0, true, (float)((float)screenCoo.X / screenRes.Width), (float)((float)screenCoo.Y / screenRes.Height), 1.0f, 64, 255, 64);
-                }
-            }
-
-            Vehicle curVehicle = Game.Player.LastVehicle;
-            if (curVehicle != null) SE.UI.DrawText("X: " + curVehicle.Model.GetDimensions().X.ToString() + " / Y: " + curVehicle.Model.GetDimensions().Y.ToString());
-#endif
             // When timers end
             if (_timerInsurance <= Game.GameTime)
             {
@@ -177,8 +135,14 @@ namespace MMI_SP
             }
         }
 
+        private void OnAborted(object sender, EventArgs e)
+        {
+            ClearAllBlips();
+            RemovePersistence();
+        }
 
-        static string[] garages = new string[] {
+
+        static readonly string[] garages = new string[] {
             "Michael - Beverly Hills",
             "Trevor - Countryside", "Trevor - City", "Trevor - Stripclub",
             "Franklin - Aunt", "Franklin - Hills",
@@ -205,16 +169,6 @@ namespace MMI_SP
             return isInGarage;
         }
 
-        // Dispose Event
-        protected override void Dispose(bool A_0)
-        {
-            if (A_0)
-            {
-                ClearAllBlips();
-                RemovePersistence();
-            }
-        }
-
         /// <summary>
         /// Remove all remaining Blips from the map.
         /// </summary>
@@ -223,22 +177,21 @@ namespace MMI_SP
             for (int i = BlipsToRemove.Count - 1; i >= 0; i--)
             {
                 Blip toDel = BlipsToRemove.ElementAt(i).Value;
-                if (toDel != null)
-                    if (toDel.Exists())
-                        toDel.Remove();
+                if (toDel != null && toDel.Exists()) toDel.Delete();
             }
         }
+
         /// <summary>
         /// Removes the Blip added by the insurance to recovered vehicles.
         /// </summary>
         /// <param name="veh"></param>
-        internal static void RemoveRecoverBlip(Vehicle veh)
+        internal static void RemoveRecoverBlip(GTA.Vehicle veh)
         {
             BlipsToRemove.TryGetValue(Utils.GetVehicleIdentifier(veh), out Blip vehicleBlip);
 
             if (vehicleBlip != null)
             {
-                vehicleBlip.Remove();
+                vehicleBlip.Delete();
                 BlipsToRemove.Remove(Utils.GetVehicleIdentifier(veh));
             }
         }
@@ -266,7 +219,7 @@ namespace MMI_SP
                 {
                     if (!InsuredVehList.Contains(veh))
                     {
-                        if (veh.NumberPlate == "46EEK572") veh.NumberPlate = SE.Vehicle.GetRandomNumberPlate();
+                        if (veh.Mods.LicensePlate == "46EEK572") veh.Mods.LicensePlate = Utils.Vehicle.GetRandomNumberPlate();
                         if (_im.IsVehicleInDB(Utils.GetVehicleIdentifier(veh)))
                         {
                             InsuredVehList.Add(veh);
@@ -291,7 +244,8 @@ namespace MMI_SP
                     {
                         string vehIdentifier = Utils.GetVehicleIdentifier(currenVeh);
 
-                        SE.UI.DrawNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("NotifyVehicleDestroyedTitle"), T.GetString("NotifyVehicleDestroyedSubtitle"));
+                        GTA.UI.Notification.Show(GTA.UI.NotificationIcon.MpMorsMutual, "MORS MUTUAL INSURANCE", T.GetString("NotifyVehicleDestroyedTitle"), T.GetString("NotifyVehicleDestroyedSubtitle"));
+                        Audio.PlaySoundFrontend("Text_Arrive_Tone", Utils.Phone.GetPhoneSoundSet());
 
                         _im.SetVehicleStatusToDB(vehIdentifier, "Dead");
                         _im.UpdateVehicleToDB(currenVeh); // Save the last configuration of the vehicle
@@ -347,7 +301,10 @@ namespace MMI_SP
                     if (recoveredVehicle.Exists())
                     {
                         if (recoveredVehicle.IsAlive)
-                            SE.UI.DrawNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("NotifyVehicleRecoveredTitle"), T.GetString("NotifyVehicleRecoveredSubtitle"));
+                        {
+                            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.MpMorsMutual, "MORS MUTUAL INSURANCE", T.GetString("NotifyVehicleRecoveredTitle"), T.GetString("NotifyVehicleRecoveredSubtitle"));
+                            Audio.PlaySoundFrontend("Text_Arrive_Tone", Utils.Phone.GetPhoneSoundSet());
+                        }
 
                         // Remove persistence
                         if (!Config.PersistentVehicles) recoveredVehicle.IsPersistent = false;
@@ -364,15 +321,21 @@ namespace MMI_SP
         /// </summary>
         private void UpdateIncomingVehicles()
         {
+            // List of blips that needs rotation update
+            List<BlipSprite> allowedRotationBlipSprites = new List<BlipSprite>() {
+                BlipSprite.ArmsTraffickingAir, BlipSprite.Tank,
+                BlipSprite.Speedboat, BlipSprite.GunCar
+            };
+
             for (int i = IncomingVehicles.Count - 1; i >= 0; i--)
             {
                 IncomingVehicle incoming = IncomingVehicles[i];
 
-                if (incoming.vehicle.CurrentBlip.Sprite == BlipSprite.ArmsTraffickingAir ||
-                    incoming.vehicle.CurrentBlip.Sprite == BlipSprite.Tank ||
-                    incoming.vehicle.CurrentBlip.Sprite == BlipSprite.Speedboat ||
-                    incoming.vehicle.CurrentBlip.Sprite == BlipSprite.GunCar)
-                    incoming.vehicle.CurrentBlip.Rotation = (int)incoming.vehicle.Rotation.Z;
+                // Update Blip rotation
+                if (allowedRotationBlipSprites.Contains(incoming.vehicle.AttachedBlip.Sprite))
+                {
+                    incoming.vehicle.AttachedBlip.Rotation = (int)incoming.vehicle.Rotation.Z;
+                }
 
                 // If the driver destroyed the vehicle, we refund the player
                 if (incoming.vehicle.IsDead)
@@ -424,7 +387,7 @@ namespace MMI_SP
 
                         int n = rnd.Next(0, speeches.Count - 1);
                         Speech speech = speeches[n];
-                        Function.Call(Hash._PLAY_AMBIENT_SPEECH_WITH_VOICE, incoming.driver, speech.Name, speech.Voice, speech.Param, speech.Index);
+                        incoming.driver.PlayAmbientSpeech(speech.Name, speech.Voice, speech.Modifier);
                     }
 
                     break;
@@ -471,8 +434,11 @@ namespace MMI_SP
 
                 if (instant || veh.Model.Hash == Game.GenerateHash("HYDRA"))
                 {
+                    // Boats are brought instant
                     if (veh.Model.IsBoat)
-                        IncomingVehicle.BringBoat(veh, cost, recoveredVehicle);
+                    {
+                        IncomingVehicle.BringBoat(veh);
+                    }
                     else
                     {
                         EntityPosition pos = Utils.GetVehicleSpawnLocation(Game.Player.Character.Position);
@@ -488,7 +454,7 @@ namespace MMI_SP
                         {
                             Blip oldBlip = BlipsToRemove[key];
                             if (oldBlip != null)
-                                if (oldBlip.Exists()) oldBlip.Remove();
+                                if (oldBlip.Exists()) oldBlip.Delete();
                             BlipsToRemove[key] = InsuranceManager.AddVehicleBlip(veh);
                         }
                         else
@@ -502,7 +468,7 @@ namespace MMI_SP
                     else if (veh.Model.IsPlane)
                         IncomingVehicles.Add(IncomingVehicle.BringPlane(veh, cost, recoveredVehicle));
                     else if (veh.Model.IsBoat)
-                        IncomingVehicle.BringBoat(veh, cost, recoveredVehicle);
+                        IncomingVehicle.BringBoat(veh);
                     else
                         IncomingVehicles.Add(IncomingVehicle.BringVehicle(veh, cost, recoveredVehicle));
 
@@ -514,7 +480,7 @@ namespace MMI_SP
                         {
                             Blip oldBlip = BlipsToRemove[key];
                             if (oldBlip != null)
-                                if (oldBlip.Exists()) oldBlip.Remove();
+                                if (oldBlip.Exists()) oldBlip.Delete();
                             BlipsToRemove[key] = InsuranceManager.AddVehicleBlip(veh);
                         }
                         else
@@ -528,13 +494,17 @@ namespace MMI_SP
 
         internal void CannotBringVehicle(IncomingVehicle incoming, int refund = 0)
         {
-            SE.UI.DrawNotification("char_mp_mors_mutual", "MORS MUTUAL INSURANCE", T.GetString("BringVehicle"), T.GetString("NotifyBringVehicleCancel"));
+            GTA.UI.Notification.Show(GTA.UI.NotificationIcon.MpMorsMutual, "MORS MUTUAL INSURANCE", T.GetString("BringVehicle"), T.GetString("NotifyBringVehicleCancel"));
 
             // Refund the player
             if (refund == 0)
-                SE.Player.AddCashToPlayer(incoming.price);
+            {
+                Utils.Player.AddCashToPlayer(incoming.price);
+            }
             else
-                SE.Player.AddCashToPlayer(refund + incoming.price);
+            {
+                Utils.Player.AddCashToPlayer(refund + incoming.price);
+            }
 
             // Remove the driver
             incoming.driver.Delete();
@@ -549,7 +519,7 @@ namespace MMI_SP
                     // Put the vehicle back in place
                     incoming.vehicle.Position = incoming.originalPosition.Position;
                     incoming.vehicle.Heading = incoming.originalPosition.Heading;
-                    incoming.vehicle.EngineRunning = false;
+                    incoming.vehicle.IsEngineRunning = false;
                     incoming.vehicle.Repair();
                 }
                 IncomingVehicles.Remove(incoming);
@@ -561,7 +531,7 @@ namespace MMI_SP
                     EntityPosition vehiclePos = InsuranceManager.GetVehicleRecoverNode(incoming.vehicle);
                     incoming.vehicle.Position = vehiclePos.Position;
                     incoming.vehicle.Heading = vehiclePos.Heading;
-                    incoming.vehicle.EngineRunning = false;
+                    incoming.vehicle.IsEngineRunning = false;
                     incoming.vehicle.Repair();
                 }
                 else
@@ -591,14 +561,13 @@ namespace MMI_SP
             }
 
             // If the player is in a bringable vehicle, we don't list it
-            if (Game.Player.Character.CurrentVehicle != null)
-                if (vehiclesToBring.Contains(Game.Player.Character.CurrentVehicle))
-                    vehiclesToBring.Remove(Game.Player.Character.CurrentVehicle);
+            if (Game.Player.Character.CurrentVehicle != null && vehiclesToBring.Contains(Game.Player.Character.CurrentVehicle))
+            {
+                vehiclesToBring.Remove(Game.Player.Character.CurrentVehicle);
+            }
 
             return vehiclesToBring;
         }
-
-
 
 
         /// <summary>

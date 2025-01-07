@@ -56,8 +56,8 @@
     <Reference Include="NativeUI">
       <HintPath>_Other\binaries\NativeUI.dll</HintPath>
     </Reference>
-    <Reference Include="ScriptHookVDotNet2">
-      <HintPath>_Other\binaries\ScriptHookVDotNet2.dll</HintPath>
+    <Reference Include="ScriptHookVDotNet3">
+      <HintPath>..\Binaries\ScriptHookVDotNet3.6.0\ScriptHookVDotNet3.dll</HintPath>
     </Reference>
     <Reference Include="SHVDN-Extender">
       <HintPath>_Other\binaries\SHVDN-Extender.dll</HintPath>
@@ -195,6 +195,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>COPY "$(TargetPath)" "D:\RGSC\Grand Theft Auto V\scripts"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

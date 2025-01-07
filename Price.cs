@@ -105,26 +105,30 @@ namespace MMI_SP
             else if (veh.Model.Hash == Game.GenerateHash("RATLOADER"))
                 classPrice += -3000;
 
+            if (classPrice < 0) return 0;
             return classPrice;
         }
 
         public static int GetVehicleSizePrice(Vehicle veh)
         {
             int value = 0;
-            Vector3 dimensions = veh.Model.GetDimensions();
+            Vector3 rearBottomLeft = veh.Model.Dimensions.rearBottomLeft;
+            Vector3 frontTopRight = veh.Model.Dimensions.frontTopRight;
+
+            float diagonal = rearBottomLeft.DistanceTo(frontTopRight);
 
             if (veh.Model.IsPlane)
             {
                 // Vehicle Length
-                if (dimensions.Y < 10f)
+                if (diagonal < 10f)
                     value += 1000;
-                else if (dimensions.Y < 20f)
+                else if (diagonal < 20f)
                     value += 6000;
-                else if (dimensions.Y < 30f)
+                else if (diagonal < 30f)
                     value += 10000;
-                else if (dimensions.Y < 50f)
+                else if (diagonal < 50f)
                     value += 13000;
-                else if (dimensions.Y < 70f)
+                else if (diagonal < 70f)
                     value += 20000;
                 else
                     value += 30000;
@@ -132,9 +136,9 @@ namespace MMI_SP
             else if (veh.Model.IsBoat)
             {
                 // Vehicle Length
-                if (dimensions.Y < 5f)
+                if (diagonal < 5f)
                     value += -4000;
-                else if (dimensions.Y < 10f)
+                else if (diagonal < 10f)
                     value += 3000;
                 else
                     value += 10000;
@@ -143,7 +147,7 @@ namespace MMI_SP
             {
                 return 0;
             }
-            else if (veh.Model.IsQuadbike)
+            else if (veh.Model.IsQuadBike)
             {
                 return 0;
             }
@@ -158,25 +162,25 @@ namespace MMI_SP
             else
             {
                 // Vehicle Length
-                if (dimensions.Y < 3f)
+                if (diagonal < 3f)
                     value += -4000;
-                else if (dimensions.Y < 5f)
+                else if (diagonal < 5f)
                     value += 0;
-                else if (dimensions.Y < 8f)
+                else if (diagonal < 8f)
                     value += 700;
-                else if (dimensions.Y < 10f)
+                else if (diagonal < 10f)
                     value += 1500;
-                else if (dimensions.Y < 15f)
+                else if (diagonal < 15f)
                     value += 3000;
                 else
                     value += 10000;
 
                 // Vehicle Width (overprice Dump and Tanks)
-                if (dimensions.X < 1.5f)
+                if (diagonal < 1.5f)
                     value += -2500;
-                else if (dimensions.X < 3.5f)
+                else if (diagonal < 3.5f)
                     value += 2000;
-                else if (dimensions.X < 7f)
+                else if (diagonal < 7f)
                     value += 6000;
                 else
                     value += 10000;
@@ -189,45 +193,45 @@ namespace MMI_SP
         {
             int value = 0;
 
-            if (veh.IsToggleModOn(VehicleToggleMod.Turbo))
+            if (veh.Mods[VehicleToggleModType.Turbo].IsInstalled)
                 value += 2000;
-            if (veh.IsToggleModOn(VehicleToggleMod.TireSmoke))
+            if (veh.Mods[VehicleToggleModType.TireSmoke].IsInstalled)
                 value += 485;
-            if (veh.IsToggleModOn(VehicleToggleMod.XenonHeadlights))
+            if (veh.Mods[VehicleToggleModType.XenonHeadlights].IsInstalled)
                 value += 960;
-            if (veh.WheelType == VehicleWheelType.HighEnd)
+            if (veh.Mods.WheelType == VehicleWheelType.HighEnd)
                 value += 200;
-            if (veh.WheelType == VehicleWheelType.Sport)
+            if (veh.Mods.WheelType == VehicleWheelType.Sport)
                 value += 120;
-            if (veh.WheelType == VehicleWheelType.Tuner)
+            if (veh.Mods.WheelType == VehicleWheelType.Tuner)
                 value += 100;
-            if (veh.GetMod(VehicleMod.Armor) > -1)
+            if (veh.Mods[VehicleModType.Armor].Index > -1)
                 value += 500;
-            if (veh.GetMod(VehicleMod.Brakes) > -1)
+            if (veh.Mods[VehicleModType.Brakes].Index > -1)
                 value += 500;
-            if (veh.GetMod(VehicleMod.Engine) > -1)
+            if (veh.Mods[VehicleModType.Engine].Index > -1)
                 value += 720;
-            if (veh.GetMod(VehicleMod.Transmission) > -1)
+            if (veh.Mods[VehicleModType.Transmission].Index > -1)
                 value += 630;
-            if (veh.WindowTint == VehicleWindowTint.LightSmoke)
+            if (veh.Mods.WindowTint == VehicleWindowTint.LightSmoke)
                 value += 170;
-            if (veh.WindowTint == VehicleWindowTint.DarkSmoke)
+            if (veh.Mods.WindowTint == VehicleWindowTint.DarkSmoke)
                 value += 275;
-            if (veh.WindowTint == VehicleWindowTint.Limo)
+            if (veh.Mods.WindowTint == VehicleWindowTint.Limo)
                 value += 300;
-            if (veh.WindowTint == VehicleWindowTint.PureBlack)
+            if (veh.Mods.WindowTint == VehicleWindowTint.PureBlack)
                 value += 355;
-            if (veh.WindowTint == VehicleWindowTint.Green)
+            if (veh.Mods.WindowTint == VehicleWindowTint.Green)
                 value += 355;
-            if (veh.IsPrimaryColorCustom)
+            if (veh.Mods.IsPrimaryColorCustom)
                 value += 700;
-            if (veh.IsSecondaryColorCustom)
+            if (veh.Mods.IsSecondaryColorCustom)
                 value += 500;
             if (veh.IsConvertible)
                 value += 525;
             if (!veh.CanTiresBurst)
                 value += 810;
-            if (veh.Livery > -1)
+            if (veh.Mods.Livery > -1)
                 value += 500;
 
             return value;

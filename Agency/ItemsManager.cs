@@ -130,13 +130,13 @@ namespace MMI_SP.Agency
                     {
                         if (prop.Exists())
                         {
-                            prop.FreezePosition = true;
+                            prop.IsPositionFrozen = true;
                             prop.IsPersistent = true;
                             return prop;
                         }
                     }
                 }
-                Logger.Info("Error: OfficeItem Init - prop is null!");
+                Logger.Error("Error: OfficeItem Init - prop is null!");
                 return null;
             }
         }

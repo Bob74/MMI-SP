@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Net;
-using System.Reflection;
 
 using GTA;
 
@@ -15,11 +13,11 @@ namespace MMI_SP
     
     internal static class Config
     {
-        internal static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory + "\\MMI";
-        internal static readonly string ConfigFile = BaseDir + "\\config.ini";
-        internal static readonly string BannerImage = BaseDir + "\\banner.png";
-        internal static readonly string InsuranceImage = BaseDir + "\\insurance.png";
-        internal static readonly string LanguageFile = BaseDir + "\\default.xml";
+        internal static readonly string BaseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MMI");
+        internal static readonly string ConfigFile = Path.Combine(BaseDir, "config.ini");
+        internal static readonly string BannerImage = Path.Combine(BaseDir, "banner.png");
+        internal static readonly string InsuranceImage = Path.Combine(BaseDir, "insurance.png");
+        internal static readonly string LanguageFile = Path.Combine(BaseDir, "default.xml");
         
         public static ScriptSettings Settings { get => _settings; }
         private static ScriptSettings _settings;

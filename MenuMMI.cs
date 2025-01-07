@@ -13,10 +13,10 @@ namespace MMI_SP
 
     class MenuMMI
     {
-        private MenuPool _menuPool;
+        private readonly MenuPool _menuPool;
         internal void MenuPoolProcessMenus() { _menuPool.ProcessMenus(); }
 
-        private UIMenu _mainMenu = new UIMenu("", "Menu");
+        private readonly UIMenu _mainMenu = new UIMenu("", "Menu");
         internal UIMenu Mainmenu { get => _mainMenu; }
         
         public bool OpenedFromiFruit { get => _openedFromiFruit; private set => _openedFromiFruit = value; }
@@ -40,7 +40,7 @@ namespace MMI_SP
         internal void Show()
         {
             _mainMenu.Visible = true;
-            Function.Call(Hash._0xFC695459D4D0E219, 0.5f, 0.5f);    // Cursor position centered
+            Function.Call(Hash.SET_CURSOR_POSITION, 0.5f, 0.5f);    // Cursor position centered
         }
 
 
@@ -78,7 +78,7 @@ namespace MMI_SP
         internal void Reset(bool iFruit = false)
         {
             OpenedFromiFruit = iFruit;
-            if (_mainMenu != null) _mainMenu.MenuItems.Clear();
+            _mainMenu?.MenuItems.Clear();
             Create();
         }
 
@@ -121,19 +121,19 @@ namespace MMI_SP
                 {
                     if (InsuranceManager.IsVehicleInsurable(veh))
                     {
-                        _itemInsure = new UIMenuItem(T.GetString("InsureVehicle"), T.GetString("InsureVehicleDesc") + "\n" + SE.Vehicle.GetVehicleFriendlyName(veh, false) + ".");
+                        _itemInsure = new UIMenuItem(T.GetString("InsureVehicle"), T.GetString("InsureVehicleDesc") + "\n" + Utils.Vehicle.GetVehicleFriendlyName(veh, false) + ".");
                         _itemInsure.SetRightLabel(cost + "$");
                         _mainMenu.AddItem(_itemInsure);
                     }
                     else
                     {
-                        _itemInsure = new UIMenuItem(T.GetString("InsureVehicle"), T.GetString("VehicleWrongType") + " " + SE.Vehicle.GetVehicleFriendlyName(veh) + ".") { Enabled = false };
+                        _itemInsure = new UIMenuItem(T.GetString("InsureVehicle"), T.GetString("VehicleWrongType") + " " + Utils.Vehicle.GetVehicleFriendlyName(veh) + ".") { Enabled = false };
                         _mainMenu.AddItem(_itemInsure);
                     }
                 }
                 else
                 {
-                    _itemInsure = new UIMenuItem(T.GetString("InsureVehicle"), T.GetString("VehicleAlreadyInsured") + "\n" + SE.Vehicle.GetVehicleFriendlyName(veh, false) + ".") { Enabled = false };
+                    _itemInsure = new UIMenuItem(T.GetString("InsureVehicle"), T.GetString("VehicleAlreadyInsured") + "\n" + Utils.Vehicle.GetVehicleFriendlyName(veh, false) + ".") { Enabled = false };
                     _mainMenu.AddItem(_itemInsure);
                 }
 
@@ -154,7 +154,7 @@ namespace MMI_SP
                                         else
                                         {
                                             if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.NoMoney);
-                                            UI.Notify(T.GetString("NotifyNoMoney"));
+                                            GTA.UI.Notification.Show(T.GetString("NotifyNoMoney"));
                                         }
                                     }
                                 }
@@ -183,14 +183,14 @@ namespace MMI_SP
                                 int cost = InsuranceManager.GetVehicleInsuranceCost(veh);
                                 _itemInsure.Text = T.GetString("InsureVehicle");
                                 _itemInsure.SetRightLabel(cost + "$");
-                                _itemInsure.Description = T.GetString("InsureVehicleDesc") + "\n" + SE.Vehicle.GetVehicleFriendlyName(veh, false) + ".";
+                                _itemInsure.Description = T.GetString("InsureVehicleDesc") + "\n" + Utils.Vehicle.GetVehicleFriendlyName(veh, false) + ".";
                                 _itemInsure.Enabled = true;
                             }
                         }
                         else
                         {
                             _itemInsure.Text = T.GetString("InsureVehicle");
-                            _itemInsure.Description = T.GetString("VehicleAlreadyInsured") + "\n" + SE.Vehicle.GetVehicleFriendlyName(veh, false) + ".";
+                            _itemInsure.Description = T.GetString("VehicleAlreadyInsured") + "\n" + Utils.Vehicle.GetVehicleFriendlyName(veh, false) + ".";
                             _itemInsure.Enabled = false;
                         }
                     }
@@ -209,7 +209,7 @@ namespace MMI_SP
         {
             if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
             InsuranceManager.Instance.InsureVehicle(veh);
-            UI.Notify(T.GetString("NotifyVehicleIsInsured"));
+            GTA.UI.Notification.Show(T.GetString("NotifyVehicleIsInsured"));
             _itemInsure.Enabled = false;
 
             // Updates
@@ -261,7 +261,7 @@ namespace MMI_SP
                         {
                             if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
                             InsuranceManager.Instance.CancelVehicle(vehID);
-                            UI.Notify(T.GetString("NotifyCanceled"));
+                            GTA.UI.Notification.Show(T.GetString("NotifyCanceled"));
                             cancelContract.Enabled = false;
 
                             _submenuCancel.RemoveItemAt(index);
@@ -329,7 +329,7 @@ namespace MMI_SP
                             {
                                 if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
                                 InsuranceManager.Instance.RecoverVehicle(vehID);
-                                UI.Notify(T.GetString("NotifyDeliverVehicle"));
+                                GTA.UI.Notification.Show(T.GetString("NotifyDeliverVehicle"));
                                 recoverVehicle.Enabled = false;
 
                                 _submenuRecover.RemoveItemAt(index);
@@ -343,7 +343,7 @@ namespace MMI_SP
                             else
                             {
                                 if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.NoMoney);
-                                UI.Notify(T.GetString("NotifyNoMoney"));
+                                GTA.UI.Notification.Show(T.GetString("NotifyNoMoney"));
                             }
                         }
                     };
@@ -394,14 +394,14 @@ namespace MMI_SP
                                 {
                                     if (Utils.GetVehicleIdentifier(veh) == vehID)
                                     {
-                                        if (veh.CurrentBlip != null) veh.CurrentBlip.Remove();
+                                        veh.AttachedBlip?.Delete();
                                         veh.Delete();
                                     }
                                 }
 
                                 InsuranceManager.Instance.RecoverVehicle(vehID);
 
-                                UI.Notify(T.GetString("NotifyDeliverVehicle"));
+                                GTA.UI.Notification.Show(T.GetString("NotifyDeliverVehicle"));
                                 stolenVehicle.Enabled = false;
 
                                 _submenuStolen.RemoveItemAt(index);
@@ -418,7 +418,7 @@ namespace MMI_SP
                             else
                             {
                                 if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.NoMoney);
-                                UI.Notify(T.GetString("NotifyNoMoney"));
+                                GTA.UI.Notification.Show(T.GetString("NotifyNoMoney"));
                             }
                         }
                     };
@@ -466,7 +466,7 @@ namespace MMI_SP
                             if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
                             string oldVehID = vehID;
                             string oldPlate = InsuranceManager.Instance.GetVehicleLicensePlate(vehID);
-                            string newPlate = Game.GetUserInput(oldPlate, 7);   // 7 = 8 caractères
+                            string newPlate = Game.GetUserInput(WindowTitle.EnterMessage20, oldPlate, 7);   // 7 = 8 caractères
                             newPlate = newPlate.PadRight(8);
                             newPlate = newPlate.ToUpperInvariant();
 
@@ -487,7 +487,7 @@ namespace MMI_SP
                                             if (Utils.GetVehicleIdentifier(InsuranceObserver.InsuredVehList[i]) == vehID)
                                             {
                                                 // Update the plate on the in game's vehicles
-                                                InsuranceObserver.InsuredVehList[i].NumberPlate = newPlate;
+                                                InsuranceObserver.InsuredVehList[i].Mods.LicensePlate = newPlate;
 
                                                 // Remove the previous vehicle identifiers from the list
                                                 InsuranceObserver.InsuredVehList.RemoveAt(i);
@@ -502,7 +502,7 @@ namespace MMI_SP
                                             InsuranceObserver.BlipsToRemove.Add(newVehID, vehBlip);
                                         }
                    
-                                        UI.Notify(T.GetString("NotifyPlateChanged") + "~n~" + "[" + oldPlate + "]" + " => " + "[" + newPlate + "]");
+                                        GTA.UI.Notification.Show(T.GetString("NotifyPlateChanged") + "~n~" + "[" + oldPlate + "]" + " => " + "[" + newPlate + "]");
                                         item.Enabled = false;
 
                                         // Updates
@@ -521,13 +521,13 @@ namespace MMI_SP
                                     else
                                     {
                                         if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.NoMoney);
-                                        UI.Notify(T.GetString("NotifyNoMoney"));
+                                        GTA.UI.Notification.Show(T.GetString("NotifyNoMoney"));
                                     }
                                 }
                             }
                             else
                             {
-                                UI.Notify(T.GetString("NotifyWrongPlate"));
+                                GTA.UI.Notification.Show(T.GetString("NotifyWrongPlate"));
                             }
                         }
                     };
@@ -572,12 +572,12 @@ namespace MMI_SP
                         {
                             if (item == bringVehicle)
                             {
-                                if (SE.Player.AddCashToPlayer(-1 * cost))
+                                if (Utils.Player.AddCashToPlayer(-1 * cost))
                                 {
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
                                     InsuranceObserver.Instance.BringVehicleToPlayer(veh, cost, Config.BringVehicleInstant);
                                     bringVehicle.Enabled = false;
-                                    UI.Notify(T.GetString("NotifyBringVehicle"));
+                                    GTA.UI.Notification.Show(T.GetString("NotifyBringVehicle"));
 
                                     _submenuBring.RemoveItemAt(index);
 
@@ -587,7 +587,7 @@ namespace MMI_SP
                                 else
                                 {
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.NoMoney);
-                                    UI.Notify(T.GetString("NotifyNoMoney"));
+                                    GTA.UI.Notification.Show(T.GetString("NotifyNoMoney"));
                                 }
                             }
                         };
@@ -680,7 +680,7 @@ namespace MMI_SP
                                 {
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
                                     _insurance.InsureVehicle(veh);
-                                    UI.Notify(T.GetString("NotifyVehicleIsInsured"));
+                                    GTA.UI.Notification.Show(T.GetString("NotifyVehicleIsInsured"));
                                     _itemInsure.Enabled = false;
 
                                     // Rebuild impacted menus
@@ -701,7 +701,7 @@ namespace MMI_SP
                                 else
                                 {
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.NoMoney);
-                                    UI.Notify(T.GetString("NotifyNoMoney"));
+                                    GTA.UI.Notification.Show(T.GetString("NotifyNoMoney"));
                                 }
                             }
                         };
@@ -753,7 +753,7 @@ namespace MMI_SP
                             {
                                 if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
                                 _insurance.CancelVehicle(vehID);
-                                UI.Notify(T.GetString("NotifyCanceled"));
+                                GTA.UI.Notification.Show(T.GetString("NotifyCanceled"));
                                 cancelContract.Enabled = false;
 
                                 // Rebuild impacted menus
@@ -820,7 +820,7 @@ namespace MMI_SP
                                 {
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
                                     _insurance.RecoverVehicle(vehID);
-                                    UI.Notify(T.GetString("NotifyDeliverVehicle"));
+                                    GTA.UI.Notification.Show(T.GetString("NotifyDeliverVehicle"));
                                     recoverVehicle.Enabled = false;
 
                                     // Rebuild impacted menus
@@ -836,7 +836,7 @@ namespace MMI_SP
                                 else
                                 {
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.NoMoney);
-                                    UI.Notify(T.GetString("NotifyNoMoney"));
+                                    GTA.UI.Notification.Show(T.GetString("NotifyNoMoney"));
                                 }
                             }
                         };
@@ -889,7 +889,7 @@ namespace MMI_SP
                                             veh.Delete();
                                     }
 
-                                    UI.Notify(T.GetString("NotifyDeliverVehicle"));
+                                    GTA.UI.Notification.Show(T.GetString("NotifyDeliverVehicle"));
                                     recoverVehicle.Enabled = false;
 
                                     // Rebuild Bring menu
@@ -898,7 +898,7 @@ namespace MMI_SP
                                 else
                                 {
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.NoMoney);
-                                    UI.Notify(T.GetString("NotifyNoMoney"));
+                                    GTA.UI.Notification.Show(T.GetString("NotifyNoMoney"));
                                 }
                             }
                         };
@@ -947,12 +947,12 @@ namespace MMI_SP
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.Okay);
                                     _observer.BringVehicleToPlayer(veh, cost, InsuranceManager.BringVehicleInstant);
                                     bringVehicle.Enabled = false;
-                                    UI.Notify(T.GetString("NotifyBringVehicle"));
+                                    GTA.UI.Notification.Show(T.GetString("NotifyBringVehicle"));
                                 }
                                 else
                                 {
                                     if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.NoMoney);
-                                    UI.Notify(T.GetString("NotifyNoMoney"));
+                                    GTA.UI.Notification.Show(T.GetString("NotifyNoMoney"));
                                 }
                             }
                         };
@@ -1018,13 +1018,13 @@ namespace MMI_SP
                                             }
                                         }
 
-                                        UI.Notify(T.GetString("NotifyPlateChanged") + oldPlate + " => " + newPlate);
+                                        GTA.UI.Notification.Show(T.GetString("NotifyPlateChanged") + oldPlate + " => " + newPlate);
                                         item.Enabled = false;
                                     }
                                     else
                                     {
                                         if (OpenedFromiFruit) MMISound.Play(MMISound.SoundFamily.NoMoney);
-                                        UI.Notify(T.GetString("NotifyNoMoney"));
+                                        GTA.UI.Notification.Show(T.GetString("NotifyNoMoney"));
                                     }
                                 }
                             }
