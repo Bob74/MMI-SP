@@ -122,13 +122,13 @@ namespace MMI_SP
                 startPosition = startPosition.Around(Config.BringVehicleRadius);
             } while (Game.Player.Character.Position.DistanceTo(startPosition) < (int)(Config.BringVehicleRadius * 0.8));
 
-            EntityPosition vehPos = Utils.GetVehicleSpawnLocation(startPosition);
+            EntityPosition vehPos = Utils.Vehicle.GetVehicleSpawnLocation(startPosition);
             veh.Position = vehPos.Position;
             veh.Heading = vehPos.Heading;
             veh.PreviouslyOwnedByPlayer = true;
             veh.IsEngineRunning = true;
 
-            Vector3 destination = Utils.GetVehicleSpawnLocation(Game.Player.Character.Position).Position;
+            Vector3 destination = Utils.Vehicle.GetVehicleSpawnLocation(Game.Player.Character.Position).Position;
 
             Ped driver = CreateDriver(veh);
             driver.Task.DriveTo(veh, destination, 0f, 10.0f, DrivingStyle.IgnoreLights);

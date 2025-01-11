@@ -30,7 +30,7 @@ namespace MMI_SP
             if (!File.Exists(_languageFilePath))
             {
                 Logger.Error("Language file does not exist! " + _languageFilePath + " (Check the language value in the config file and check if the file exist)");
-                SE.UI.DrawNotification("MMI-SP: ERROR - Language file does not exist! See \"GTA V\\MMI-SP.log\"");
+                GTA.UI.Notification.Show("MMI-SP: ERROR - Language file does not exist! See \"GTA V\\MMI-SP.log\"");
             }
             else
             {

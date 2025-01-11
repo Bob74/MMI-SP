@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 
 using GTA;
+using MMI_SP.Common;
 
 namespace MMI_SP
 {
@@ -125,7 +126,7 @@ namespace MMI_SP
         private static void LoadConfigValues()
         {
             // Dummy to force the game to load the texture
-            SE.UI.DrawTexture(InsuranceImage, 1000, 2.0f, 2.0f, Color.FromArgb(35, 199, 128));
+            Utils.UI.DrawTexture(InsuranceImage, 2.0f, 2.0f, Color.FromArgb(0, 0, 0, 0));
 
             // Checks
             _checkForUpdate = Settings.GetValue("Check", "CheckForUpdate", true);

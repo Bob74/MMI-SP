@@ -124,11 +124,13 @@ namespace MMI_SP
                     {
                         if (InsuranceManager.IsVehicleInsured(_previousVehicle))
                         {
-                            SE.UI.DrawTexture(Config.InsuranceImage, 4500, 0.955f, 0.83f, Color.FromArgb(35, 199, 128));
+                            // TODO: Should be shown for 4500ms
+                            Utils.UI.DrawTexture(Config.InsuranceImage, 0.955f, 0.83f, Color.FromArgb(35, 199, 128));
                         }
                         else
-                        {   
-                            SE.UI.DrawTexture(Config.InsuranceImage, 4500, 0.955f, 0.83f, Color.FromArgb(190, 0, 50));
+                        {
+                            // TODO: Should be shown for 4500ms
+                            Utils.UI.DrawTexture(Config.InsuranceImage, 0.955f, 0.83f, Color.FromArgb(190, 0, 50));
                         }
                     }
                 }
@@ -187,12 +189,12 @@ namespace MMI_SP
         /// <param name="veh"></param>
         internal static void RemoveRecoverBlip(GTA.Vehicle veh)
         {
-            BlipsToRemove.TryGetValue(Utils.GetVehicleIdentifier(veh), out Blip vehicleBlip);
+            BlipsToRemove.TryGetValue(Utils.Vehicle.GetVehicleIdentifier(veh), out Blip vehicleBlip);
 
             if (vehicleBlip != null)
             {
                 vehicleBlip.Delete();
-                BlipsToRemove.Remove(Utils.GetVehicleIdentifier(veh));
+                BlipsToRemove.Remove(Utils.Vehicle.GetVehicleIdentifier(veh));
             }
         }
 
@@ -220,7 +222,7 @@ namespace MMI_SP
                     if (!InsuredVehList.Contains(veh))
                     {
                         if (veh.Mods.LicensePlate == "46EEK572") veh.Mods.LicensePlate = Utils.Vehicle.GetRandomNumberPlate();
-                        if (_im.IsVehicleInDB(Utils.GetVehicleIdentifier(veh)))
+                        if (_im.IsVehicleInDB(Utils.Vehicle.GetVehicleIdentifier(veh)))
                         {
                             InsuredVehList.Add(veh);
                             Raise_InsuredVehicleDetected(this, veh);
@@ -242,7 +244,7 @@ namespace MMI_SP
                 {
                     if (currenVeh.IsDead)
                     {
-                        string vehIdentifier = Utils.GetVehicleIdentifier(currenVeh);
+                        string vehIdentifier = Utils.Vehicle.GetVehicleIdentifier(currenVeh);
 
                         GTA.UI.Notification.Show(GTA.UI.NotificationIcon.MpMorsMutual, "MORS MUTUAL INSURANCE", T.GetString("NotifyVehicleDestroyedTitle"), T.GetString("NotifyVehicleDestroyedSubtitle"));
                         Audio.PlaySoundFrontend("Text_Arrive_Tone", Utils.Phone.GetPhoneSoundSet());
@@ -441,7 +443,7 @@ namespace MMI_SP
                     }
                     else
                     {
-                        EntityPosition pos = Utils.GetVehicleSpawnLocation(Game.Player.Character.Position);
+                        EntityPosition pos = Utils.Vehicle.GetVehicleSpawnLocation(Game.Player.Character.Position);
                         veh.Position = pos.Position;
                         veh.Heading = pos.Heading;
                     }
@@ -449,7 +451,7 @@ namespace MMI_SP
                     // If it isn't a recovered vehicle, it doesn't have a Blip yet
                     if (!recoveredVehicle)
                     {
-                        string key = Utils.GetVehicleIdentifier(veh);
+                        string key = Utils.Vehicle.GetVehicleIdentifier(veh);
                         if (BlipsToRemove.ContainsKey(key))
                         {
                             Blip oldBlip = BlipsToRemove[key];
@@ -475,7 +477,7 @@ namespace MMI_SP
                     // If it isn't a recovered vehicle, it doesn't have a Blip yet
                     if (!recoveredVehicle)
                     {
-                        string key = Utils.GetVehicleIdentifier(veh);
+                        string key = Utils.Vehicle.GetVehicleIdentifier(veh);
                         if (BlipsToRemove.ContainsKey(key))
                         {
                             Blip oldBlip = BlipsToRemove[key];
@@ -592,7 +594,7 @@ namespace MMI_SP
         {
             foreach (Vehicle veh in InsuredVehList)
             {
-                if (Utils.GetVehicleIdentifier(veh) == vehID)
+                if (Utils.Vehicle.GetVehicleIdentifier(veh) == vehID)
                 {
                     InsuredVehList.Remove(veh);
                     if (Config.PersistentVehicles) veh.IsPersistent = false;
@@ -611,8 +613,8 @@ namespace MMI_SP
         {
             if (!RecoveredVehList.Contains(veh))
                 RecoveredVehList.Add(veh);
-            if (!BlipsToRemove.ContainsValue(blip) && !BlipsToRemove.ContainsKey(Utils.GetVehicleIdentifier(veh)))
-                BlipsToRemove.Add(Utils.GetVehicleIdentifier(veh), blip);
+            if (!BlipsToRemove.ContainsValue(blip) && !BlipsToRemove.ContainsKey(Utils.Vehicle.GetVehicleIdentifier(veh)))
+                BlipsToRemove.Add(Utils.Vehicle.GetVehicleIdentifier(veh), blip);
 
             if (Config.PersistentVehicles) veh.IsPersistent = true;
         }

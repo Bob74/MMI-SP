@@ -16,7 +16,7 @@ namespace MMI_SP.iFruit
         private static string _menuTitle = T.GetString("ConfigMenuTitle");
         public string MenuTitle { get => _menuTitle; set => _menuTitle = value; }
 
-        private static readonly Point _offset = SE.UI.GetScreenCoordinatesFromFloat(0.565f, 0.2f);
+        private static readonly Point _offset = new Point(640, 360);
 
         private readonly MenuPool _menuPool;
         readonly UIMenu _mainMenu = new UIMenu(_menuTitle, T.GetString("ConfigMenuSubtitle"), _offset);

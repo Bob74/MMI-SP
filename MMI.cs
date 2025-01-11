@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 using GTA;
 
@@ -15,7 +16,6 @@ namespace MMI_SP
         
         private static bool _initialized = false;
         public static bool IsInitialized { get => _initialized; }
-
 
         public MMI()
         {            
@@ -83,7 +83,7 @@ namespace MMI_SP
 
             if (character.CurrentVehicle != null)
             {
-                SE.UI.DrawText(character.CurrentVehicle.IsPersistent.ToString());
+                Debug.ShowVehicleInfo(character.CurrentVehicle);
             }
         }
     }

@@ -6,6 +6,8 @@ using System.Text;
 using GTA;
 using GTA.Native;
 using GTA.Math;
+using System.Drawing;
+using System.Linq;
 
 namespace MMI_SP.Common
 {
@@ -17,39 +19,9 @@ namespace MMI_SP.Common
         internal static string GetCurrentMethod(int offset = 0)
         {
             var methodInfo = new StackTrace().GetFrame(1 + offset).GetMethod();
-            var clasName = methodInfo.ReflectedType.Name;
+            var className = methodInfo.ReflectedType.Name;
             
-            return $"{ clasName }.{ methodInfo.Name }";
-        }
-
-        internal static void ShowVehicleInfo(GTA.Vehicle veh, float x = 0.825f, float y = 0.65f)
-        {
-            GTA.Vehicle current = Game.Player.Character.CurrentVehicle;
-            if (veh != null)
-            {
-                SE.UI.DrawText("Last Vehicle", 0, false, x, y, 0.4f, 255, 255, 255, 255);
-                y += 0.025f;
-                SE.UI.DrawText("Last Handle: " + veh.Handle.ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
-                y += 0.025f;
-                if (current != null)
-                {
-                    SE.UI.DrawText("Current Handle: " + Game.Player.Character.CurrentVehicle.Handle.ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
-                    y += 0.025f;
-                }
-                SE.UI.DrawText("Driveable: " + veh.IsDriveable.ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
-                y += 0.025f;
-                SE.UI.DrawText("Persistent: " + veh.IsPersistent.ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
-                y += 0.025f;
-                SE.UI.DrawText("MissionEntity: " + Function.Call<bool>(Hash.IS_ENTITY_A_MISSION_ENTITY, veh), 0, false, x, y, 0.4f, 255, 255, 255, 255);
-                y += 0.025f;
-                SE.UI.DrawText("ModelHash: " + veh.Model.Hash.ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
-                y += 0.025f;
-                SE.UI.DrawText("GameplayCamera: " + GameplayCamera.IsRendering, 0, false, x, y, 0.4f, 255, 255, 255, 255);
-                y += 0.025f;
-                SE.UI.DrawText("Insured: " + InsuranceManager.IsVehicleInsured(GetVehicleIdentifier(veh)).ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
-                y += 0.025f;
-                SE.UI.DrawText("Price: " + InsuranceManager.GetVehicleInsuranceCost(veh).ToString(), 0, false, x, y, 0.4f, 255, 255, 255, 255);
-            }
+            return $"{ className }.{ methodInfo.Name }";
         }
 
         internal static string ToHexString(string str)
@@ -76,41 +48,57 @@ namespace MMI_SP.Common
             return Encoding.Unicode.GetString(bytes); // returns: "Hello world" for "48656C6C6F20776F726C64"
         }
 
-        /// <summary>
-        /// Return the unique identifier of the vehicle.
-        /// </summary>
-        /// <param name="veh"></param>
-        /// <returns></returns>
-        internal static string GetVehicleIdentifier(GTA.Vehicle veh)
+        internal static class Player
         {
-            string vehIdentifier = SE.Player.GetCurrentCharacterName() + veh.Model.Hash.ToString() + veh.Mods.LicensePlate;
-            vehIdentifier = vehIdentifier.Replace(" ", "_");
-            return vehIdentifier;
-        }
-
-        internal static EntityPosition GetVehicleSpawnLocation(Vector3 position)
-        {
-            for (int index = 0; index < 22; ++index)
+            /// <summary>
+            /// Return the current Ped type.
+            /// 0 = Michael
+            /// 1 = Franklin
+            /// 2 = Trevor
+            /// </summary>
+            /// <returns>Character's ID.</returns>
+            public static int GetCurrentCharacterID()
             {
-                OutputArgument outUnk = new OutputArgument();
-                OutputArgument outPosition = new OutputArgument();
-                OutputArgument outHeading = new OutputArgument();
-
-                Function.Call(Hash.GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING, position.X, position.Y, position.Z, index, outPosition, outHeading, outUnk, 9, 3.0, 2.5);
-                Vector3 newPos = outPosition.GetResult<Vector3>();
-                float newHeading = outHeading.GetResult<float>();
-
-                if (!Function.Call<bool>(Hash.IS_POINT_OBSCURED_BY_A_MISSION_ENTITY, newPos.X, newPos.Y, newPos.Z, 5.0f, 5.0f, 5.0f, 0))
+                switch ((uint)Game.Player.Character.Model.Hash)
                 {
-                    return new EntityPosition(newPos, newHeading);
+                    case (uint)PedHash.Michael:
+                        return 0;
+                    case (uint)PedHash.Franklin:
+                        return 1;
+                    case (uint)PedHash.Trevor:
+                        return 2;
+                    default: return -1;
                 }
             }
 
-            return new EntityPosition(position, 0f);
-        }
+            /// <summary>
+            /// Return the character's name.
+            /// </summary>
+            /// <param name="full">Return first name and last name.</param>
+            /// <returns>Character's name</returns>
+            public static string GetCurrentCharacterName(bool full = false)
+            {
+                string lastname = "";
 
-        internal static class Player
-        {
+                switch (GetCurrentCharacterID())
+                {
+                    case 0:
+                        if (full)
+                            lastname = " De Santa";
+                        return "Michael" + lastname;
+                    case 1:
+                        if (full)
+                            lastname = " Clinton";
+                        return "Franklin" + lastname;
+                    case 2:
+                        if (full)
+                            lastname = " Philips";
+                        return "Trevor" + lastname;
+                    default:
+                        return "Unknown";
+                }
+            }
+
             /// <summary>
             /// Add cash to the current player. Use negative value to remove cash.
             /// </summary>
@@ -133,11 +121,49 @@ namespace MMI_SP.Common
 
         internal static class Vehicle
         {
+            /// <summary>
+            /// Return the length of the vehicle.
+            /// </summary>
+            /// <param name="veh"></param>
+            /// <returns></returns>
             internal static float GetVehicleLength(GTA.Vehicle veh)
             {
                 Vector3 pos1 = veh.Model.Dimensions.rearBottomLeft;
                 Vector3 pos2 = veh.Model.Dimensions.frontTopRight;
                 return Math.Abs(pos1.Y) + Math.Abs(pos2.Y);
+            }
+
+            /// <summary>
+            /// Return the unique identifier of the vehicle.
+            /// </summary>
+            /// <param name="veh"></param>
+            /// <returns></returns>
+            internal static string GetVehicleIdentifier(GTA.Vehicle veh)
+            {
+                string vehIdentifier = Utils.Player.GetCurrentCharacterName() + veh.Model.Hash.ToString() + veh.Mods.LicensePlate;
+                vehIdentifier = vehIdentifier.Replace(" ", "_");
+                return vehIdentifier;
+            }
+
+            internal static EntityPosition GetVehicleSpawnLocation(Vector3 position)
+            {
+                for (int index = 0; index < 22; ++index)
+                {
+                    OutputArgument outUnk = new OutputArgument();
+                    OutputArgument outPosition = new OutputArgument();
+                    OutputArgument outHeading = new OutputArgument();
+
+                    Function.Call(Hash.GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING, position.X, position.Y, position.Z, index, outPosition, outHeading, outUnk, 9, 3.0, 2.5);
+                    Vector3 newPos = outPosition.GetResult<Vector3>();
+                    float newHeading = outHeading.GetResult<float>();
+
+                    if (!Function.Call<bool>(Hash.IS_POINT_OBSCURED_BY_A_MISSION_ENTITY, newPos.X, newPos.Y, newPos.Z, 5.0f, 5.0f, 5.0f, 0))
+                    {
+                        return new EntityPosition(newPos, newHeading);
+                    }
+                }
+
+                return new EntityPosition(position, 0f);
             }
 
             /// <summary>
@@ -189,6 +215,21 @@ namespace MMI_SP.Common
             }
 
             /// <summary>
+            /// Check if the plate number is valide. A valid plate number has a maximum of 8 characters containing only digits, letters from A to Z and white spaces.
+            /// </summary>
+            /// <param name="plateNumber">The license plate number to check.</param>
+            /// <returns>True if the number is valid</returns>
+            public static bool IsValidPlateNumber(string plateNumber)
+            {
+                if (plateNumber.Length <= 8)
+                {
+                    if (plateNumber.Contains(" ")) plateNumber = plateNumber.Replace(" ", "");
+                    return !plateNumber.Any(ch => !Char.IsLetterOrDigit(ch));
+                }
+                else return false;
+            }
+
+            /// <summary>
             /// Returns a comprehensive name for the vehicle.
             /// </summary>
             /// <param name="veh">Vehicle</param>
@@ -210,6 +251,38 @@ namespace MMI_SP.Common
                 }
             }
 
+            /// <summary>
+            /// Number of livery2 available for the vehicle.
+            /// Livery2 know usage is the roof of the TORNADO5 (Benny's custom)
+            /// </summary>
+            /// <param name="veh">Vehicle</param>
+            /// <returns>Number of livery</returns>
+            public static int GetVehicleLivery2Count(GTA.Vehicle veh)
+            {
+                return Function.Call<int>((Hash)0x5ECB40269053C0D4, veh);
+            }
+
+            /// <summary>
+            /// Get the current index of livery2 for the vehicle.
+            /// Livery2 know usage is the roof of the TORNADO5 (Benny's custom)
+            /// </summary>
+            /// <param name="veh">Vehicle</param>
+            /// <returns>Current livery</returns>
+            public static int GetVehicleLivery2(GTA.Vehicle veh)
+            {
+                return Function.Call<int>((Hash)0x60190048C0764A26, veh);
+            }
+
+            /// <summary>
+            /// Set the current index of livery2 for the vehicle.
+            /// Livery2 known usage is the roof of the TORNADO5 (Benny's custom)
+            /// </summary>
+            /// <param name="veh">Vehicle</param>
+            /// <param name="liveryNumber">Livery ID to set to the vehicle</param>
+            public static void SetVehicleLivery2(GTA.Vehicle veh, int liveryNumber)
+            {
+                Function.Call((Hash)0xA6D3A8750DC73270, veh, liveryNumber);
+            }
         }
 
         internal static class Phone
@@ -249,6 +322,20 @@ namespace MMI_SP.Common
                     Script.Yield();
                 } while (timer >= Game.GameTime);
             }
+        }
+
+        internal static class UI
+        {
+            public static void DrawTexture(string fileName, float x, float y, Color color)
+            {
+                // Get the texture properties
+                Image sprite = Image.FromFile(fileName);
+
+                // Draw
+                GTA.UI.CustomSprite a = new GTA.UI.CustomSprite(fileName, new Size(sprite.Width, sprite.Height), new PointF(x, y), color, 0.0f);
+                a.Draw();
+            }
+
         }
 
     }

@@ -454,7 +454,7 @@ namespace MMI_SP
             // Remove the persistence of the vehicle and eventual Blip
             foreach (Vehicle veh in World.GetAllVehicles())
             {
-                if (Utils.GetVehicleIdentifier(veh) == vehIdentifier)
+                if (Utils.Vehicle.GetVehicleIdentifier(veh) == vehIdentifier)
                 {
                     veh.AttachedBlip?.Delete();
                     veh.IsPersistent = false;
@@ -483,7 +483,7 @@ namespace MMI_SP
                     Blip vehBlip = AddVehicleBlip(veh);
 
                     // Update DB status
-                    SetVehicleStatusToDB(Utils.GetVehicleIdentifier(veh), "Alive");
+                    SetVehicleStatusToDB(Utils.Vehicle.GetVehicleIdentifier(veh), "Alive");
 
                     Raise_VehicleHasBeenRecovered(this, veh, vehBlip);
                 }
@@ -514,7 +514,7 @@ namespace MMI_SP
         /// <returns></returns>
         internal bool IsVehicleInDB(Vehicle veh)
         {
-            return IsVehicleInDB(Utils.GetVehicleIdentifier(veh));
+            return IsVehicleInDB(Utils.Vehicle.GetVehicleIdentifier(veh));
         }
 
         /// <summary>
@@ -608,7 +608,7 @@ namespace MMI_SP
         /// <returns></returns>
         public static bool IsVehicleInsured(Vehicle veh)
         {
-            return IsVehicleInsured(Utils.GetVehicleIdentifier(veh));
+            return IsVehicleInsured(Utils.Vehicle.GetVehicleIdentifier(veh));
         }
 
         /// <summary>
@@ -747,13 +747,13 @@ namespace MMI_SP
         /// <param name="veh"></param>
         private XElement GenerateVehicleSection(Vehicle veh)
         {
-            string vehIdentifier = Utils.GetVehicleIdentifier(veh);
+            string vehIdentifier = Utils.Vehicle.GetVehicleIdentifier(veh);
 
             XElement vehSection = new XElement(vehIdentifier);
 
             // General
             XElement generalSection = new XElement("General");
-            generalSection.Add(new XElement("Owner", SE.Player.GetCurrentCharacterName(true)));
+            generalSection.Add(new XElement("Owner", Utils.Player.GetCurrentCharacterName(true)));
             generalSection.Add(new XElement("Status", "Alive"));
             generalSection.Add(new XElement("Model", veh.Model.Hash.ToString()));
             generalSection.Add(new XElement("Cost", GetVehicleInsuranceCost(veh).ToString()));
@@ -865,10 +865,10 @@ namespace MMI_SP
             liverySection.Add(new XElement("ID", veh.Mods.Livery));
             vehSection.Add(liverySection);
 
-            if (SE.Vehicle.GetVehicleLivery2(veh) > 0)
+            if (Utils.Vehicle.GetVehicleLivery2(veh) > 0)
             {
                 XElement livery2Section = new XElement("Livery2");
-                livery2Section.Add(new XElement("ID", SE.Vehicle.GetVehicleLivery2(veh)));
+                livery2Section.Add(new XElement("ID", Utils.Vehicle.GetVehicleLivery2(veh)));
                 vehSection.Add(livery2Section);
             }
 
@@ -881,7 +881,7 @@ namespace MMI_SP
         /// <param name="veh"></param>
         public void UpdateVehicleToDB(Vehicle veh)
         {
-            string vehIdentifier = Utils.GetVehicleIdentifier(veh);
+            string vehIdentifier = Utils.Vehicle.GetVehicleIdentifier(veh);
 
             if (_dbFile.Element("Vehicles") != null)
             {
@@ -1057,12 +1057,12 @@ namespace MMI_SP
                         else
                             Logger.Error("Error: UpdateVehicleToDB - Livery ID not found.");
 
-                    if (SE.Vehicle.GetVehicleLivery2(veh) > 0)
+                    if (Utils.Vehicle.GetVehicleLivery2(veh) > 0)
                     {
                         currentSection = vehSection.Element("Livery2");
                         if (currentSection != null)
                             if (currentSection.Element("ID") != null)
-                                currentSection.Element("ID").SetValue(SE.Vehicle.GetVehicleLivery2(veh));
+                                currentSection.Element("ID").SetValue(Utils.Vehicle.GetVehicleLivery2(veh));
                             else
                                 Logger.Error("Error: UpdateVehicleToDB - Livery2 ID not found.");
                     }
@@ -1131,9 +1131,13 @@ namespace MMI_SP
                                     VehicleMod modType = (VehicleMod)Enum.Parse(typeof(VehicleMod), mod.Attribute("Name").Value);
                                     int modIndex = Int32.Parse(mod.Value);
                                     if (modType == VehicleMod.FrontWheels)
+                                    {
                                         variation = bool.Parse(vehSection.Element("Mods").Element("FrontTiresCustom").Value);
+                                    }
                                     else if (modType == VehicleMod.BackWheels)
+                                    {
                                         variation = bool.Parse(vehSection.Element("Mods").Element("RearTiresCustom").Value);
+                                    }
 
                                     veh.SetMod(modType, modIndex, variation);
                                 }
@@ -1217,7 +1221,7 @@ namespace MMI_SP
                         }
                         if (vehSection.Element("Livery2") != null)
                         {
-                            SE.Vehicle.SetVehicleLivery2(veh, Int32.Parse(vehSection.Element("Livery2").Element("ID").Value));
+                            Utils.Vehicle.SetVehicleLivery2(veh, Int32.Parse(vehSection.Element("Livery2").Element("ID").Value));
                         }
 
                         return veh;
