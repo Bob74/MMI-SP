@@ -74,7 +74,7 @@ namespace MMI_SP.iFruit
             int counter = 0;
             List<dynamic> languages = new List<dynamic>();
 
-            foreach (string file in Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MMI", "*.xml")))
+            foreach (string file in Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MMI"), "*.xml"))
             {
                 FileInfo fileInfo = new FileInfo(file);
                 if (fileInfo.Name != "db.xml")

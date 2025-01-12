@@ -38,8 +38,6 @@ namespace MMI_SP
         private static List<Dependency> Dependencies { get => _dependencies; }
         private readonly static List<Dependency> _dependencies = new List<Dependency>
         {
-            new Dependency("ScriptHookVDotNet2.dll", "2.10.13.0", AppDomain.CurrentDomain.BaseDirectory + @"\.."),
-            new Dependency("SHVDN-Extender.dll", "1.0.0.1"),
             new Dependency("iFruitAddon2.dll", "2.1.0.0"),
             new Dependency("NativeUI.dll", "1.9.0.0")
         };

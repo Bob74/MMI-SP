@@ -772,27 +772,42 @@ namespace MMI_SP
 
             // Mods
             XElement modsSection = new XElement("Mods");
-
-            if (Function.Call<int>(Hash.GET_NUM_MOD_KITS, veh) != 0)
+            foreach (VehicleModType mod in Enum.GetValues(typeof(VehicleModType)))
             {
-                foreach (VehicleMod mod in Enum.GetValues(typeof(VehicleMod)))
-                {
-                    XElement modElem = new XElement("Mod", new XAttribute("Name", mod));
-                    modElem.SetValue(veh.GetMod(mod));
+                XElement modElem = new XElement("Mod", new XAttribute("Name", mod));
+                modElem.SetValue(veh.Mods[mod].Index);
 
-                    modsSection.Add(modElem);
-                }
-                foreach (VehicleToggleMod mod in Enum.GetValues(typeof(VehicleToggleMod)))
-                {
-                    XElement modElem = new XElement("ToggleMod", new XAttribute("Name", mod));
-                    if (veh.IsToggleModOn(mod))
-                        modElem.SetValue(true);
-                    else
-                        modElem.SetValue(false);
-
-                    modsSection.Add(modElem);
-                }
+                modsSection.Add(modElem);
             }
+            foreach (VehicleToggleModType mod in Enum.GetValues(typeof(VehicleToggleModType)))
+            {
+                XElement modElem = new XElement("ToggleMod", new XAttribute("Name", mod));
+                if (veh.Mods[mod].IsInstalled)
+                    modElem.SetValue(true);
+                else
+                    modElem.SetValue(false);
+
+                modsSection.Add(modElem);
+            }
+
+            //foreach (VehicleMod mod in Enum.GetValues(typeof(VehicleMod)))
+            //{
+            //    XElement modElem = new XElement("Mod", new XAttribute("Name", mod));
+            //    modElem.SetValue(veh.GetMod(mod));
+
+            //    modsSection.Add(modElem);
+            //}
+            //foreach (VehicleToggleMod mod in Enum.GetValues(typeof(VehicleToggleMod)))
+            //{
+            //    XElement modElem = new XElement("ToggleMod", new XAttribute("Name", mod));
+            //    if (veh.IsToggleModOn(mod))
+            //        modElem.SetValue(true);
+            //    else
+            //        modElem.SetValue(false);
+
+            //    modsSection.Add(modElem);
+            //}
+            
             modsSection.Add(new XElement("FrontTiresCustom", Function.Call<bool>(Hash.GET_VEHICLE_MOD_VARIATION, veh, 23)));
             modsSection.Add(new XElement("RearTiresCustom", Function.Call<bool>(Hash.GET_VEHICLE_MOD_VARIATION, veh, 24)));
             modsSection.Add(new XElement("WindowTint", (int)veh.Mods.WindowTint));
@@ -916,23 +931,41 @@ namespace MMI_SP
                     {
                         currentSection.RemoveAll();
 
-                        foreach (VehicleMod mod in Enum.GetValues(typeof(VehicleMod)))
+                        foreach (VehicleModType mod in Enum.GetValues(typeof(VehicleModType)))
                         {
                             XElement modElem = new XElement("Mod", new XAttribute("Name", mod));
-                            modElem.SetValue(veh.GetMod(mod));
+                            modElem.SetValue(veh.Mods[mod].Index);
 
                             currentSection.Add(modElem);
                         }
-                        foreach (VehicleToggleMod mod in Enum.GetValues(typeof(VehicleToggleMod)))
+                        foreach (VehicleToggleModType mod in Enum.GetValues(typeof(VehicleToggleModType)))
                         {
                             XElement modElem = new XElement("ToggleMod", new XAttribute("Name", mod));
-                            if (veh.IsToggleModOn(mod))
+                            if (veh.Mods[mod].IsInstalled)
                                 modElem.SetValue(true);
                             else
                                 modElem.SetValue(false);
 
                             currentSection.Add(modElem);
                         }
+
+                        //foreach (VehicleMod mod in Enum.GetValues(typeof(VehicleMod)))
+                        //{
+                        //    XElement modElem = new XElement("Mod", new XAttribute("Name", mod));
+                        //    modElem.SetValue(veh.GetMod(mod));
+
+                        //    currentSection.Add(modElem);
+                        //}
+                        //foreach (VehicleToggleMod mod in Enum.GetValues(typeof(VehicleToggleMod)))
+                        //{
+                        //    XElement modElem = new XElement("ToggleMod", new XAttribute("Name", mod));
+                        //    if (veh.IsToggleModOn(mod))
+                        //        modElem.SetValue(true);
+                        //    else
+                        //        modElem.SetValue(false);
+
+                        //    currentSection.Add(modElem);
+                        //}
                         currentSection.Add(new XElement("FrontTiresCustom", Function.Call<bool>(Hash.GET_VEHICLE_MOD_VARIATION, veh, 23)));
                         currentSection.Add(new XElement("RearTiresCustom", Function.Call<bool>(Hash.GET_VEHICLE_MOD_VARIATION, veh, 24)));
                         currentSection.Add(new XElement("WindowTint", (int)veh.Mods.WindowTint));
@@ -1128,18 +1161,21 @@ namespace MMI_SP
                                 {
                                     bool variation = false;
 
-                                    VehicleMod modType = (VehicleMod)Enum.Parse(typeof(VehicleMod), mod.Attribute("Name").Value);
+                                    VehicleModType modType = (VehicleModType)Enum.Parse(typeof(VehicleModType), mod.Attribute("Name").Value);
                                     int modIndex = Int32.Parse(mod.Value);
-                                    if (modType == VehicleMod.FrontWheels)
+                                    if (modType == VehicleModType.FrontWheel)
                                     {
                                         variation = bool.Parse(vehSection.Element("Mods").Element("FrontTiresCustom").Value);
                                     }
-                                    else if (modType == VehicleMod.BackWheels)
+                                    else if (modType == VehicleModType.RearWheel)
                                     {
                                         variation = bool.Parse(vehSection.Element("Mods").Element("RearTiresCustom").Value);
                                     }
 
-                                    veh.SetMod(modType, modIndex, variation);
+                                    veh.Mods[modType].Index = modIndex;
+                                    veh.Mods[modType].Variation = variation;
+
+                                    //veh.SetMod(modType, modIndex, variation);
                                 }
                                 veh.Mods.WindowTint = (VehicleWindowTint)Int32.Parse(vehSection.Element("Mods").Element("WindowTint").Value);
                             }
@@ -1147,10 +1183,16 @@ namespace MMI_SP
                             {
                                 foreach (XElement toggleMod in vehSection.Element("Mods").Elements("ToggleMod"))
                                 {
-                                    VehicleToggleMod modType = (VehicleToggleMod)Enum.Parse(typeof(VehicleToggleMod), toggleMod.Attribute("Name").Value);
+                                    VehicleToggleModType modType = (VehicleToggleModType)Enum.Parse(typeof(VehicleToggleModType), toggleMod.Attribute("Name").Value);
                                     bool enabled = bool.Parse(toggleMod.Value);
-                                    veh.ToggleMod(modType, enabled);
+                                    veh.Mods[modType].IsInstalled = enabled;
                                 }
+                                //foreach (XElement toggleMod in vehSection.Element("Mods").Elements("ToggleMod"))
+                                //{
+                                //    VehicleToggleMod modType = (VehicleToggleMod)Enum.Parse(typeof(VehicleToggleMod), toggleMod.Attribute("Name").Value);
+                                //    bool enabled = bool.Parse(toggleMod.Value);
+                                //    veh.ToggleMod(modType, enabled);
+                                //}
                             }
                         }
  

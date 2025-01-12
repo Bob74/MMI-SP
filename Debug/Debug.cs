@@ -16,7 +16,7 @@ namespace MMI_SP
         private static readonly GTA.UI.TextElement debugTextVehModelHash = new GTA.UI.TextElement("Modelhash: False", new PointF(0.0f, 50.0f), 0.25f);
         private static readonly GTA.UI.TextElement debugTextVehGameplayCamera = new GTA.UI.TextElement("GameplayCamera: False", new PointF(0.0f, 60.0f), 0.25f);
         private static readonly GTA.UI.TextElement debugTextVehInsured = new GTA.UI.TextElement("Insured: False", new PointF(0.0f, 70.0f), 0.25f);
-        private static readonly GTA.UI.TextElement debugTextVehPrice = new GTA.UI.TextElement("Price: 0", new PointF(0.0f, 70.0f), 0.25f);
+        private static readonly GTA.UI.TextElement debugTextVehPrice = new GTA.UI.TextElement("Price: 0", new PointF(0.0f, 80.0f), 0.25f);
 
         public static void ShowVehicleInfo(Vehicle veh)
         {
